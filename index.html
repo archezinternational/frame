@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FRAME — Midjourney Prompt Builder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #f0c05a;
+      --gold-dim: rgba(240,192,90,0.12);
+      --gold-border: rgba(240,192,90,0.4);
+      --bg: #ffffff;
+      --bg-card: #f7f6f3;
+      --bg-hover: #f0efeb;
+      --text: #1a1a1a;
+      --text-muted: #555550;
+      --text-dim: #b0afa9;
+      --border: rgba(0,0,0,0.09);
+      --border-strong: rgba(0,0,0,0.16);
+      --black: #1a1a1a;
+      --radius: 10px;
+      --t: 0.18s ease;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 13px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 40px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: rgba(255,255,255,0.97);
+      backdrop-filter: blur(12px);
+      z-index: 100;
+    }
+
+    .logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 26px;
+      letter-spacing: 0.18em;
+      color: var(--gold);
+    }
+    .logo span {
+      color: var(--text-dim);
+      font-size: 10px;
+      font-family: 'Montserrat', sans-serif;
+      letter-spacing: 0.22em;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-left: 14px;
+      vertical-align: middle;
+    }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      transition: all var(--t);
+    }
+    .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* ── LAYOUT ── */
+    .app-shell {
+      display: grid;
+      grid-template-columns: 248px 1fr;
+      min-height: calc(100vh - 65px);
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      border-right: 1px solid var(--border);
+      padding: 28px 0;
+      position: sticky;
+      top: 65px;
+      height: calc(100vh - 65px);
+      overflow-y: auto;
+    }
+
+    .sidebar-title {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      padding: 0 22px 14px;
+    }
+
+    .tpl-item {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 11px 22px;
+      cursor: pointer;
+      transition: all var(--t);
+      border-left: 2px solid transparent;
+    }
+    .tpl-item:hover { background: var(--bg-hover); border-left-color: var(--gold-border); }
+    .tpl-item.active { background: var(--gold-dim); border-left-color: var(--gold); }
+    .tpl-item.active .tpl-num { color: var(--gold); }
+    .tpl-item.active .tpl-name { color: var(--black); font-weight: 600; }
+
+    .tpl-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 15px;
+      color: var(--text-dim);
+      min-width: 20px;
+      transition: color var(--t);
+    }
+    .tpl-name {
+      font-size: 11.5px;
+      font-weight: 500;
+      color: var(--text-muted);
+      transition: color var(--t);
+      line-height: 1.3;
+    }
+
+    /* ── MAIN ── */
+    .main-content { padding: 36px 44px 48px; }
+
+    /* Template header */
+    .tpl-header { margin-bottom: 28px; }
+    .tpl-tag {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 1px solid var(--gold-border);
+      background: var(--gold-dim);
+      border-radius: 4px;
+      padding: 3px 9px;
+      margin-bottom: 12px;
+    }
+    .tpl-header h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 36px;
+      letter-spacing: 0.04em;
+      color: var(--black);
+      margin-bottom: 6px;
+    }
+    .tpl-header p { font-size: 13px; color: var(--text-muted); }
+
+    /* ── STEPPER ── */
+    .stepper {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-bottom: 24px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .step {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 3px;
+      padding: 12px 8px;
+      cursor: pointer;
+      transition: all var(--t);
+      border-right: 1px solid var(--border);
+      background: var(--bg-card);
+      position: relative;
+    }
+    .step:last-child { border-right: none; }
+    .step:hover { background: var(--bg-hover); }
+
+    .step.active {
+      background: var(--black);
+    }
+    .step.done {
+      background: var(--gold-dim);
+    }
+
+    .step-letter {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      transition: color var(--t);
+      line-height: 1;
+    }
+    .step.active .step-letter { color: var(--gold); }
+    .step.done .step-letter { color: var(--gold); }
+
+    .step-name {
+      font-size: 8.5px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      transition: color var(--t);
+    }
+    .step.active .step-name { color: rgba(255,255,255,0.7); }
+    .step.done .step-name { color: var(--gold); }
+
+    .step-check {
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      width: 14px;
+      height: 14px;
+      background: var(--gold);
+      border-radius: 50%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .step-check svg { width: 8px; height: 8px; }
+    .step.done .step-check { display: flex; }
+
+    /* ── ELEMENT PANEL ── */
+    .element-panel {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .panel-top {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .panel-letter {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      color: var(--gold);
+      background: var(--gold-dim);
+      border-right: 1px solid var(--gold-border);
+      width: 64px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      letter-spacing: 0.06em;
+    }
+
+    .panel-meta { flex: 1; padding: 0 20px; }
+    .panel-label {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--black);
+      letter-spacing: 0.02em;
+    }
+    .panel-sublabel { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+    .panel-body { padding: 20px; }
+
+    /* Input */
+    .input-wrap { position: relative; margin-bottom: 20px; }
+    .el-input {
+      width: 100%;
+      background: var(--bg);
+      border: 1.5px solid var(--border-strong);
+      border-radius: 8px;
+      padding: 11px 40px 11px 14px;
+      color: var(--text);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 12.5px;
+      outline: none;
+      transition: border-color var(--t);
+    }
+    .el-input::placeholder { color: var(--text-dim); }
+    .el-input:focus { border-color: var(--gold); }
+
+    .input-clear {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 1;
+      display: none;
+      transition: color var(--t);
+      padding: 0 2px;
+    }
+    .input-clear:hover { color: var(--text-muted); }
+
+    /* Chip groups */
+    .chip-group { margin-bottom: 16px; }
+    .chip-group:last-child { margin-bottom: 0; }
+    .cg-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 9px;
+    }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    .chip {
+      padding: 5px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--border-strong);
+      background: transparent;
+      color: var(--text-muted);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--t);
+      white-space: nowrap;
+      user-select: none;
+    }
+    .chip:hover { border-color: var(--gold); color: var(--black); background: var(--gold-dim); }
+    .chip.on { border-color: var(--black); color: #fff; background: var(--black); }
+
+    /* ── STEP NAVIGATION ── */
+    .step-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }
+
+    .nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: none;
+      transition: all var(--t);
+    }
+
+    .nav-back {
+      background: var(--bg-card);
+      color: var(--text-muted);
+      border: 1px solid var(--border-strong);
+    }
+    .nav-back:hover:not(:disabled) { background: var(--bg-hover); color: var(--black); }
+    .nav-back:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .nav-next {
+      background: var(--black);
+      color: #fff;
+    }
+    .nav-next:hover { background: #333; transform: translateY(-1px); }
+    .nav-next.finish { background: var(--gold); color: var(--black); }
+    .nav-next.finish:hover { background: #e8b84a; transform: translateY(-1px); }
+
+    .step-counter {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-dim);
+      letter-spacing: 0.05em;
+    }
+    .step-counter strong { color: var(--black); }
+
+    /* ── PROMPT ── */
+    .prompt-section {
+      border: 1.5px solid var(--gold-border);
+      border-radius: var(--radius);
+      background: var(--bg-card);
+      overflow: hidden;
+    }
+
+    .prompt-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 20px;
+      border-bottom: 1px solid var(--gold-border);
+      background: var(--gold-dim);
+    }
+
+    .prompt-top-left { display: flex; align-items: center; gap: 10px; }
+    .prompt-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    .p-dots { display: flex; gap: 5px; align-items: center; }
+    .p-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--text-dim);
+      transition: background var(--t);
+    }
+    .p-dot.on { background: var(--gold); }
+
+    .prompt-body { padding: 18px 20px; }
+    .prompt-text {
+      font-size: 13px;
+      line-height: 1.75;
+      color: var(--text);
+      min-height: 52px;
+      word-break: break-word;
+    }
+    .prompt-text .pt-empty { color: var(--text-dim); font-style: italic; }
+    .prompt-text .pt-sep { color: var(--text-dim); margin: 0 1px; }
+    .prompt-text .pt-ar { color: var(--gold); font-weight: 700; }
+
+    .prompt-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 13px 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .btn-copy {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 20px;
+      border-radius: 8px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      background: var(--black);
+      color: #fff;
+      transition: all var(--t);
+    }
+    .btn-copy:hover { background: #333; transform: translateY(-1px); }
+    .btn-copy.ok { background: #3d9e62; }
+
+    .btn-clear {
+      display: inline-flex;
+      align-items: center;
+      padding: 9px 16px;
+      border-radius: 8px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      border: 1px solid var(--border-strong);
+      cursor: pointer;
+      background: transparent;
+      color: var(--text-muted);
+      transition: all var(--t);
+    }
+    .btn-clear:hover { color: var(--black); border-color: var(--black); }
+
+    .ar-wrap { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+    .ar-label {
+      font-size: 9px; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--text-dim);
+    }
+    .ar-select {
+      background: var(--bg);
+      border: 1px solid var(--border-strong);
+      border-radius: 6px;
+      padding: 7px 10px;
+      color: var(--text);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+      transition: border-color var(--t);
+    }
+    .ar-select:focus { border-color: var(--gold); }
+
+    /* Example */
+    .example-block {
+      margin-top: 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 15px 20px;
+      background: var(--bg-card);
+    }
+    .ex-label {
+      font-size: 9px; font-weight: 700;
+      letter-spacing: 0.28em; text-transform: uppercase;
+      color: var(--text-dim); margin-bottom: 7px;
+    }
+    .ex-text { font-size: 12px; color: var(--text-muted); line-height: 1.6; font-style: italic; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 32px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--black);
+      color: #fff;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 12px; font-weight: 700;
+      letter-spacing: 0.1em;
+      padding: 12px 24px;
+      border-radius: 8px;
+      z-index: 1000;
+      transition: transform 0.28s ease;
+      pointer-events: none;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 768px) {
+      header { padding: 16px 20px; }
+      .app-shell { grid-template-columns: 1fr; }
+      .sidebar {
+        position: static; height: auto;
+        border-right: none; border-bottom: 1px solid var(--border);
+        padding: 16px 0; overflow-x: auto;
+      }
+      .sidebar > div:last-child { display: flex; overflow-x: auto; padding: 0 16px; gap: 0; }
+      .tpl-item { min-width: max-content; border-left: none; border-bottom: 2px solid transparent; flex-direction: column; gap: 2px; padding: 8px 12px; }
+      .tpl-item.active { border-bottom-color: var(--gold); border-left-color: transparent; }
+      .main-content { padding: 24px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">FRAME <span>by Archez International</span></div>
+  <button class="btn-ghost" onclick="resetAll()">Reset All</button>
+</header>
+
+<div class="app-shell">
+  <div class="sidebar">
+    <div class="sidebar-title">Templates</div>
+    <div id="tplList"></div>
+  </div>
+
+  <div class="main-content">
+    <div class="tpl-header" id="tplHeader"></div>
+    <div class="stepper" id="stepper"></div>
+    <div class="element-panel" id="elementPanel"></div>
+    <div class="step-nav">
+      <button class="nav-btn nav-back" id="btnBack" onclick="goBack()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+        Back
+      </button>
+      <span class="step-counter" id="stepCounter"></span>
+      <button class="nav-btn nav-next" id="btnNext" onclick="goNext()">
+        Next
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+
+    <div class="prompt-section">
+      <div class="prompt-top">
+        <div class="prompt-top-left">
+          <span class="prompt-label">Your Prompt</span>
+          <div class="p-dots" id="pDots"></div>
+        </div>
+      </div>
+      <div class="prompt-body">
+        <div class="prompt-text" id="promptText"></div>
+      </div>
+      <div class="prompt-actions">
+        <button class="btn-copy" id="btnCopy" onclick="copyPrompt()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          Copy Prompt
+        </button>
+        <button class="btn-clear" onclick="resetCurrent()">Clear</button>
+        <div class="ar-wrap">
+          <span class="ar-label">AR</span>
+          <select class="ar-select" id="arSelect" onchange="buildPrompt()">
+            <option value="1:1">1:1</option>
+            <option value="16:9">16:9</option>
+            <option value="4:5">4:5</option>
+            <option value="2:3">2:3</option>
+            <option value="3:2">3:2</option>
+            <option value="4:3">4:3</option>
+            <option value="21:9">21:9</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="example-block" id="exBlock"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast">Prompt copied!</div>
+
+<script>
+/* ─── DATA ─────────────────────────────────────────────────────────── */
+const T = [
+  {
+    id:1, name:"Residential Exterior", defaultAr:"1:1",
+    desc:"For villas, houses, residences, cabins and any residential building seen from the outside.",
+    example:"Isometric view, luxury villa, minimalist style, white render and warm oak, golden hour, soft shadows, hyperrealistic style --ar 1:1",
+    els:[
+      { key:"F", label:"Focus", sub:"View type & space", ph:"e.g. Isometric view, luxury villa",
+        groups:[
+          { label:"Views", chips:["Isometric view","Site plan top view","Bird's eye view","Street-level perspective","Eye-level exterior","Three-quarter view","Aerial view","Axonometric view","Section perspective","Worm's eye view","Oblique aerial view","Ground-level close-up"] },
+          { label:"Spaces", chips:["contemporary house","luxury villa","minimalist residence","mountain cabin","beach house","urban townhouse","country estate","farmhouse","coastal home","desert retreat","forest cabin","lakeside cottage","cliff house","split-level home","floating home","glass pavilion","courtyard house","stone farmhouse","prairie house","prefab home"] }
+        ]
+      },
+      { key:"R", label:"Reference", sub:"Architectural style", ph:"e.g. minimalist style",
+        groups:[
+          { label:"Styles", chips:["minimalist","brutalist","japandi","scandinavian","mid-century modern","tropical modern","mediterranean","wabi-sabi","contemporary","industrial","organic modern","biophilic","art deco","bauhaus","neoclassical","craftsman","georgian","farmhouse modern","sustainable modern","high-tech","deconstructivist","vernacular modern","raw minimalist","post-modern"] }
+        ]
+      },
+      { key:"M", label:"Materials", sub:"Always qualify your materials", ph:"e.g. white render and warm oak",
+        groups:[
+          { label:"Combinations", chips:["white render and warm oak","board-formed concrete and glass","weathered timber and natural stone","travertine and warm teak","corten steel and glass","rammed earth and timber","white stucco and terracotta","polished concrete and black steel","limestone and warm timber","cedar and dark metal","zinc cladding and timber","reclaimed brick and steel","glass curtain wall and raw concrete","dark timber cladding and stone","pale limestone and glass","natural slate and timber","white marble and warm brass","bamboo and white render","black steel and aged oak","raw concrete and copper cladding","white plaster and exposed brick","lava stone and light timber"] }
+        ]
+      },
+      { key:"A", label:"Atmosphere", sub:"Light and atmosphere", ph:"e.g. golden hour, soft shadows",
+        groups:[
+          { label:"Light", chips:["golden hour","soft morning light","overcast diffused light","warm afternoon light","dramatic side light","blue hour twilight","harsh midday sun","dappled forest light","misty morning light","winter soft light","tropical noon light","stormy overcast sky","low winter sun","crisp autumn light","hazy summer glow"] },
+          { label:"Atmosphere", chips:["soft shadows","serene atmosphere","moody","warm and inviting","dramatic","peaceful and quiet","vibrant","minimalist calm","lush and verdant","crisp and clear","ethereal","cinematic","contemplative","raw and wild","open and airy"] }
+        ]
+      },
+      { key:"E", label:"Expression", sub:"Visual style", ph:"e.g. hyperrealistic style",
+        groups:[
+          { label:"Styles", chips:["hyperrealistic style","editorial architectural photography style","watercolor wash style","architectural illustration style","hand-drawn sketch style","clay render style","digital painting style","pencil sketch style","ink drawing style","pastel illustration style","concept art style","charcoal sketch style","flat design style","isometric illustration style","linocut print style","gouache painting style","blueprint style","cross-hatching style","screen print style","risograph style","oil painting style","mixed media style"] }
+        ]
+      }
+    ]
+  },
+  {
+    id:2, name:"Residential Interior", defaultAr:"1:1",
+    desc:"For living rooms, bedrooms, kitchens, bathrooms and any residential interior space.",
+    example:"Isometric view, japandi living room, japandi style, natural oak and linen textiles, soft morning light, serene atmosphere, architectural illustration style --ar 1:1",
+    els:[
+      { key:"F", label:"Focus", sub:"View type & space", ph:"e.g. Isometric view, japandi living room",
+        groups:[
+          { label:"Views", chips:["Floor plan top view","Isometric view","Axonometric interior view","Eye-level interior perspective","Three-quarter interior view","Section cutaway view","Wide-angle interior shot","Close-up detail view"] },
+          { label:"Spaces", chips:["open plan living room","minimalist bedroom","japandi kitchen","luxury bathroom","master suite","studio apartment","loft","home library","meditation room","home office","dining room","walk-in wardrobe","children's room","open kitchen with island","sunlit reading nook","compact city apartment","rooftop penthouse interior","concrete loft interior","converted warehouse interior","cozy mountain retreat interior"] }
+        ]
+      },
+      { key:"R", label:"Reference", sub:"Interior style", ph:"e.g. japandi style",
+        groups:[
+          { label:"Styles", chips:["minimalist","japandi","scandinavian","mid-century modern","wabi-sabi","industrial","boho","contemporary","luxury contemporary","french modern","coastal","maximalist","art deco interior","biophilic interior","brutalist interior","organic modern","mediterranean interior","rustic modern","high-gloss modern","tonal minimalist","eclectic curated","muji-inspired"] }
+        ]
+      },
+      { key:"M", label:"Materials", sub:"Always qualify your materials", ph:"e.g. natural oak and linen textiles",
+        groups:[
+          { label:"Combinations", chips:["warm oak and white plaster","pale ash and linen textiles","teak and brass fixtures","rammed earth and natural fiber","marble and warm brass","exposed concrete and warm wood","travertine and matte black metal","smoked oak and boucle upholstery","walnut and cream plaster","rattan and white linen","terracotta tiles and warm plaster","stone and aged oak","grey concrete and warm leather","white plaster and gold accents","zellige tiles and white plaster","limewash walls and light oak","dark walnut and marble","bamboo and white cotton","glass and blackened steel","raw oak and white gypsum","painted brick and reclaimed wood","dark linen and warm plaster"] }
+        ]
+      },
+      { key:"A", label:"Atmosphere", sub:"Light and atmosphere", ph:"e.g. soft morning light, serene atmosphere",
+        groups:[
+          { label:"Light", chips:["soft morning light","warm afternoon light","diffused skylight","golden hour through floor-to-ceiling windows","soft candlelight","dramatic spotlight","overcast diffused light","warm pendant light","dappled natural light","moonlight glow","warm evening ambient light","bright airy daylight","soft filtered light through sheer curtains","dramatic raking window light","warm low lamp light"] },
+          { label:"Atmosphere", chips:["serene atmosphere","cozy and warm","moody","airy and bright","intimate","calm and minimal","warm and inviting","fresh and clean","editorial and crisp","rustic and earthy","romantic","meditative silence","vibrant and layered","luxurious and still","raw and textured"] }
+        ]
+      },
+      { key:"E", label:"Expression", sub:"Visual style", ph:"e.g. architectural illustration style",
+        groups:[
+          { label:"Styles", chips:["hyperrealistic style","editorial architectural photography style","architectural illustration style","clay render style","watercolor wash style","digital painting style","line drawing style","pencil sketch style","flat color illustration style","pastel illustration style","ink and wash style","isometric illustration style","cutaway illustration style","concept render style","gouache illustration style","collage style","charcoal sketch style","blueprint style","magazine render style","risograph style","tonal illustration style","hand-drawn architectural style"] }
+        ]
+      }
+    ]
+  },
+  {
+    id:3, name:"Landscape Design", defaultAr:"1:1",
+    desc:"For gardens, plazas, parks, terraces and any exterior landscape space.",
+    example:"Isometric view, contemporary rooftop garden, biophilic style, timber decking and raised planting beds, soft morning light, serene and peaceful, watercolor wash style --ar 1:1",
+    els:[
+      { key:"F", label:"Focus", sub:"View type & space", ph:"e.g. Isometric view, contemporary rooftop garden",
+        groups:[
+          { label:"Views", chips:["Site plan top view","Isometric view","Bird's eye view","Eye-level landscape view","Aerial perspective","Section landscape view","Three-quarter aerial view","Ground-level garden view"] },
+          { label:"Spaces", chips:["residential garden","urban plaza","rooftop garden","botanical garden","coastal park","zen garden","tropical resort garden","urban courtyard","memorial garden","sensory garden","community park","waterfront promenade","public square","healing garden","food forest","vertical garden wall","sculpture garden","ornamental meadow","pocket park","rain garden","wildflower meadow","terraced hillside garden"] }
+        ]
+      },
+      { key:"R", label:"Reference", sub:"Landscape design style", ph:"e.g. biophilic style",
+        groups:[
+          { label:"Styles", chips:["minimalist","biophilic","contemporary","japanese zen","mediterranean","tropical","sustainable","botanical","formal english","naturalistic","prairie landscape","japanese stroll garden","moorish","coastal native","modernist landscape","dutch new perennial","dry garden","rain garden","forest bathing","edible landscape","sensory garden","xeriscape"] }
+        ]
+      },
+      { key:"M", label:"Materials", sub:"Materials and vegetation", ph:"e.g. timber decking and raised planting beds",
+        groups:[
+          { label:"Combinations", chips:["natural stone paving and native planting","timber decking and lush vegetation","permeable stone and timber seating","raked gravel and natural stone","travertine and tropical planting","weathered timber and coastal grasses","wildflower meadow and stone paths","bamboo and water feature","gravel and ornamental grasses","mossy stones and ferns","terracotta and olive trees","rusted steel planters and lavender","white gravel and dark hedges","decking and raised vegetable beds","brick paving and espaliered trees","concrete pavers and lush groundcover","reclaimed stone and meadow planting","exposed aggregate and timber screens","limestone terrace and citrus trees","granite setts and formal hedging","river stones and bamboo","timber boardwalk and reeds"] }
+        ]
+      },
+      { key:"A", label:"Atmosphere", sub:"Light and atmosphere", ph:"e.g. soft morning light, serene and peaceful",
+        groups:[
+          { label:"Light", chips:["soft morning light","warm afternoon light","golden hour","soft overcast light","ambient twilight","harsh midday sun","dappled tree light","blue hour glow","misty dawn light","winter light","spring bloom light","dramatic storm light","hazy summer light","crisp autumn light","gentle evening light"] },
+          { label:"Atmosphere", chips:["serene and peaceful","lush and vibrant","calm","warm and inviting","botanical","wild and naturalistic","meditative","fresh and dewy","vibrant and blooming","crisp and minimal","lush and tropical","overgrown and romantic","structured and formal","open and airy","earthy and grounding"] }
+        ]
+      },
+      { key:"E", label:"Expression", sub:"Visual style", ph:"e.g. watercolor wash style",
+        groups:[
+          { label:"Styles", chips:["architectural illustration style","watercolor wash style","botanical illustration style","editorial architectural photography style","hand-drawn sketch style","digital painting style","pencil sketch style","gouache illustration style","ink and wash style","pastel illustration style","flat color plan style","linocut print style","naturalistic painting style","collage style","charcoal sketch style","screen print style","risograph style","vintage botanical print style","japanese woodblock print style","isometric illustration style","concept render style","mixed media style"] }
+        ]
+      }
+    ]
+  },
+  {
+    id:4, name:"Furniture Design", defaultAr:"4:5",
+    desc:"For chairs, tables, sofas, wardrobes, lamps and any furniture piece.",
+    example:"Front view, japandi lounge chair, japandi style, pale ash wood frame and woven rattan seat, soft diffused natural light, soft toned wall, product illustration style --ar 4:5",
+    els:[
+      { key:"F", label:"Focus", sub:"View type & furniture piece", ph:"e.g. Front view, japandi lounge chair",
+        groups:[
+          { label:"Views", chips:["Product top view","Front view","Side view","Isometric view","Three-quarter view","Close-up detail view","Flat lay view","Studio shot view","Lifestyle context view","Exploded view"] },
+          { label:"Pieces", chips:["lounge chair","dining table","sofa","wardrobe","coffee table","floor lamp","sideboard","bed frame","dining chair","shelving unit","desk","armchair","bar stool","bench","daybed","pendant lamp","console table","side table","chaise longue","modular sofa","rocking chair","cantilevered chair","credenza","bedside table","pouffe","bookshelf"] }
+        ]
+      },
+      { key:"R", label:"Reference", sub:"Design style", ph:"e.g. japandi style",
+        groups:[
+          { label:"Styles", chips:["japandi","mid-century modern","wabi-sabi","minimalist","scandinavian","contemporary","industrial","organic modern","art deco","bauhaus","french modern","italian modernism","traditional","maximalist","coastal","brutalist furniture","high-tech","kinfolk-inspired","tonal minimalist","luxe minimal","hand-crafted rustic","post-modern"] }
+        ]
+      },
+      { key:"M", label:"Materials", sub:"Always qualify your materials", ph:"e.g. pale ash wood frame and woven rattan seat",
+        groups:[
+          { label:"Materials", chips:["pale ash wood frame","smoked walnut","raw unfinished oak","polished brass","natural rattan","bouclé upholstery","natural linen","white marble","warm teak","matte black steel","cane webbing","aged bronze","light oak and leather","blackened steel and walnut","ceramic and brass","recycled plastic and steel","bent plywood","saddle leather","velvet upholstery","terrazzo top","woven seagrass","bleached oak","ribbed glass","white lacquer","dark stained timber","woven wool upholstery"] }
+        ]
+      },
+      { key:"A", label:"Atmosphere", sub:"Light and context", ph:"e.g. soft diffused natural light, soft toned wall",
+        groups:[
+          { label:"Light", chips:["soft diffused natural light","warm ambient light","soft side light","warm volumetric evening light","dark moody background","studio lighting","dramatic spotlight","clean white studio light","warm window light","soft overhead light","hazy backlight","crisp daylight","editorial studio flash","warm low light","high-contrast dramatic light"] },
+          { label:"Context", chips:["white background","minimalist workspace","serene bedroom context","soft toned wall","warm living room setting","outdoor terrace","gallery setting","editorial magazine spread","textured plaster wall","stone floor","concrete studio floor","linen curtain backdrop","natural light studio","warm toned interior","minimal shelf display"] }
+        ]
+      },
+      { key:"E", label:"Expression", sub:"Visual style", ph:"e.g. product illustration style",
+        groups:[
+          { label:"Styles", chips:["product illustration style","editorial architectural photography style","hyperrealistic style","pencil sketch style with material annotations","clay render style","line drawing style","flat design style","technical drawing style","isometric product illustration","concept render style","digital painting style","watercolor wash style","marker sketch style","exploded diagram style","gouache illustration style","pastel product illustration","charcoal sketch style","blueprint style","ink drawing style","mixed media style","3D render style","hand-drawn product style"] }
+        ]
+      }
+    ]
+  },
+  {
+    id:5, name:"Architectural Illustration", defaultAr:"1:1",
+    desc:"For illustrations of buildings and spaces with a defined artistic style.",
+    example:"Illustrated isometric view, mixed-use building, contemporary style, glass and concrete structure, warm interior lighting, vibrant urban setting, architectural illustration style --ar 1:1",
+    els:[
+      { key:"F", label:"Focus", sub:"View type & space", ph:"e.g. Illustrated isometric view, mixed-use building",
+        groups:[
+          { label:"Views", chips:["Illustrated floor plan","Illustrated isometric view","Illustrated aerial view","Illustrated section perspective","Illustrated three-quarter view","Illustrated bird's eye view","Illustrated street-level view","Illustrated axonometric view"] },
+          { label:"Spaces", chips:["contemporary apartment","mixed-use building","cultural center","artist studio","museum","library","hotel","residential building","civic hall","concert hall","sports pavilion","train station","airport terminal","university campus","rooftop pavilion","urban market hall","waterfront museum","residential tower","performing arts center","adaptive reuse building","co-working space","community center"] }
+        ]
+      },
+      { key:"R", label:"Reference", sub:"Architectural style", ph:"e.g. contemporary style",
+        groups:[
+          { label:"Styles", chips:["minimalist","contemporary","brutalist","futuristic","organic","industrial","sustainable","high-tech","parametric","deconstructivist","neoclassical revival","expressionist","vernacular modern","biomorphic","metabolist","post-modern","critical regionalism","sculptural architecture","raw brutalist","new baroque","civic monumental","adaptive reuse"] }
+        ]
+      },
+      { key:"M", label:"Materials", sub:"Structural materials", ph:"e.g. glass and concrete structure",
+        groups:[
+          { label:"Combinations", chips:["glass and concrete structure","warm timber and polished concrete","board-formed concrete and glass","white render and warm oak","exposed steel and glass","natural stone and timber","raw concrete and copper cladding","perforated aluminum and glass","brick and exposed concrete","terracotta panels and glass","corten steel and timber","rammed earth and glass","travertine and steel","black steel and white render","bamboo and glass","timber lattice and glass","stone and weathered bronze","dark brick and glass","zinc cladding and timber","precast concrete and glazing","textured concrete and warm oak","glass fiber reinforced concrete"] }
+        ]
+      },
+      { key:"A", label:"Atmosphere", sub:"Light and atmosphere", ph:"e.g. warm interior lighting, vibrant urban setting",
+        groups:[
+          { label:"Light", chips:["soft diffused light","warm interior lighting","golden hour light","dramatic overhead light","soft overcast light","dramatic raking light","dappled courtyard light","blue hour exterior","warm spotlight","misty morning light","crisp winter light","bright summer noon","twilight glow","theatrical spotlight","dramatic storm light"] },
+          { label:"Atmosphere", chips:["serene","vibrant urban setting","contemplative","warm and inviting","dramatic","civic and monumental","intimate","bold and graphic","ethereal","raw and powerful","playful","meditative","festive","industrial","bustling and active"] }
+        ]
+      },
+      { key:"E", label:"Expression", sub:"Visual style", ph:"e.g. architectural illustration style",
+        groups:[
+          { label:"Styles", chips:["architectural illustration style","watercolor wash style","hand-drawn ink style","digital painting style","ink and watercolor hybrid style","pencil sketch style","pastel color illustration style","gouache painting style","linocut print style","charcoal sketch style","blueprint style","risograph style","flat color illustration style","screen print style","japanese woodblock print style","oil painting style","mixed media style","collage style","vintage poster style","concept art style","isometric illustration style","editorial illustration style"] }
+        ]
+      }
+    ]
+  },
+  {
+    id:6, name:"Urban Planning", defaultAr:"1:1",
+    desc:"For masterplans, site plans, urban blocks and large scale developments.",
+    example:"Urban masterplan top view, mixed-use development, contemporary urban development, residential blocks and green corridors, soft natural light, architectural illustration style --ar 1:1",
+    els:[
+      { key:"F", label:"Focus", sub:"View type & scale", ph:"e.g. Urban masterplan top view, mixed-use development",
+        groups:[
+          { label:"Views", chips:["Urban masterplan top view","Site plan top view","Isometric view","Aerial perspective","Bird's eye view","3D aerial masterplan","Illustrated masterplan view","Colored site plan view"] },
+          { label:"Scales", chips:["mixed-use development","residential development","urban block","waterfront development","campus","urban plaza","transit hub","sports district","cultural quarter","tech campus","eco village","smart city district","waterfront regeneration","market district","new town center","industrial adaptive reuse","university campus","business park","health campus","waterfront marina district","affordable housing estate","urban infill development"] }
+        ]
+      },
+      { key:"R", label:"Reference", sub:"Development type", ph:"e.g. contemporary urban development",
+        groups:[
+          { label:"Types", chips:["contemporary urban","sustainable","mixed-use","residential","waterfront","campus","transit-oriented","new urbanism","smart city","eco district","walkable urban","car-free urban","biophilic urban","culturally-led regeneration","industrial adaptive reuse","affordable housing","high-density residential","low-rise dense","historic preservation","waterfront renewal","arts district","resilient urban design"] }
+        ]
+      },
+      { key:"M", label:"Materials", sub:"Plan elements", ph:"e.g. residential blocks and green corridors",
+        groups:[
+          { label:"Elements", chips:["residential blocks and green corridors","building footprints and public plazas","stone promenade and marina","tree-lined streets and shared courtyards","cycling paths and urban farms","academic buildings and central green lawn","public squares and mixed-use ground floors","water features and linear parks","pedestrian lanes and terraced gardens","bus rapid transit and park-and-ride","green roofs and solar panels","community gardens and allotments","wetland parks and boardwalks","cultural buildings and outdoor amphitheater","market halls and food streets","sports fields and recreation centers","waterfront boardwalk and piers","playgrounds and community gardens","bike lanes and pocket parks","urban forests and green wedges","stormwater gardens and bioswales","artist studios and public galleries"] }
+        ]
+      },
+      { key:"A", label:"Atmosphere", sub:"Light", ph:"e.g. soft natural light",
+        groups:[
+          { label:"Light", chips:["soft natural light","golden hour light","warm afternoon light","soft evening light","soft overcast light","crisp morning light","aerial haze light","dramatic storm light","blue hour aerial view","bright midday sun","misty dawn light","winter white light","autumn warm light","spring clear light","summer haze light"] },
+          { label:"Tone", chips:["clean and minimal","vibrant and active","green and sustainable","urban and dense","open and parklike","waterfront and breezy","historic and layered","futuristic and planned","earthy and natural","civic and formal","community-centered","bold and graphic","soft and residential","industrial and adaptive","coastal and relaxed"] }
+        ]
+      },
+      { key:"E", label:"Expression", sub:"Visual style", ph:"e.g. architectural illustration style",
+        groups:[
+          { label:"Styles", chips:["architectural illustration style","hand-drawn sketch style","watercolor wash style","editorial illustration style","line drawing style","hyperrealistic style","digital painting style","flat color plan style","axonometric illustration style","colored aerial render style","urban diagram style","infographic style","gouache painting style","risograph style","screen print style","vintage map style","blueprint style","collage style","ink and wash style","pastel illustration style","concept render style","3D aerial render style"] }
+        ]
+      }
+    ]
+  },
+  {
+    id:7, name:"Nighttime Architecture", defaultAr:"16:9",
+    desc:"For night renders and artificially lit architectural photography.",
+    example:"Exterior perspective, eye level, contemporary house, minimalist contemporary style, white render and warm oak, warm interior light glowing through windows, dark garden surrounding, deep blue night sky, hyperrealistic style --ar 16:9",
+    els:[
+      { key:"F", label:"Focus", sub:"View type & space", ph:"e.g. Exterior perspective eye level, contemporary house",
+        groups:[
+          { label:"Views", chips:["Exterior perspective eye level","Aerial perspective","Three-quarter night view","Street-level night view","Drone aerial view","Low-angle dramatic view","Elevated street view","Backlit silhouette view"] },
+          { label:"Spaces", chips:["contemporary house","luxury villa","cultural center","office tower","restaurant","hotel","waterfront residence","urban neighborhood","rooftop bar","retail facade","urban tower","pavilion","car showroom","beach resort","mountain retreat","waterfront hotel","city apartment building","gallery building","performing arts center","airport terminal","luxury spa resort","sports arena"] }
+        ]
+      },
+      { key:"R", label:"Reference", sub:"Architectural style", ph:"e.g. minimalist contemporary style",
+        groups:[
+          { label:"Styles", chips:["minimalist contemporary","brutalist","mid-century modern","contemporary","luxury contemporary","scandinavian","japanese","industrial","tropical modern","high-tech","organic modern","raw concrete modern","biophilic","art deco","deconstructivist","glass box modern","layered concrete","monolithic minimal","perforated facade modern","parametric facade","luminous pavilion","cantilevered modern"] }
+        ]
+      },
+      { key:"M", label:"Materials", sub:"Materials and night lighting", ph:"e.g. white render and warm oak, warm interior glow",
+        groups:[
+          { label:"Combinations", chips:["white render and warm oak with warm interior light glowing through floor-to-ceiling windows","travertine and glass with illuminated infinity pool","board-formed concrete with dramatic uplighting on facade","glass and steel with warm commercial lighting at ground floor","dark timber cladding with warm amber backlit fins","black concrete with blue-white LED accent lighting","white render with soft yellow window glow","stone and glass with underwater pool lighting","corten steel with warm bronze accent lights","glass curtain wall with warm office interior glow","perforated facade with coloured internal lighting","dark brick with warm spotlit entrance","zinc cladding with warm domestic window light","rammed earth with soft path lighting","bamboo screens with warm filtered light","white marble with dramatic ground uplighting","raw concrete with linear LED strips","glass and oak with candlelit terrace","textured concrete with projected light patterns","dark steel frame with warm amber glass panels","mirror cladding reflecting city lights","travertine with flickering fire pit light"] }
+        ]
+      },
+      { key:"A", label:"Atmosphere", sub:"Night context", ph:"e.g. dark garden surrounding, deep blue night sky",
+        groups:[
+          { label:"Night Context", chips:["dark garden surrounding deep blue night sky","reflective wet pavement deep blue night sky","urban context deep blue night sky","dark ocean background deep blue sky","snow covered surroundings deep blue winter night sky","fog and mist deep navy night sky","palm trees silhouette deep blue tropical night sky","desert night sky with stars","mountain silhouette dark night sky","overcast city night orange glow sky","pine forest and dark sky","rain and neon reflections night city","clear star-filled night sky","dramatic storm clouds night sky","harbour reflections dark water night"] }
+        ]
+      },
+      { key:"E", label:"Expression", sub:"Visual style", ph:"e.g. hyperrealistic style",
+        groups:[
+          { label:"Styles", chips:["hyperrealistic style","editorial architectural photography style","digital painting style","concept render style","cinematic photography style","long-exposure photography style","night photography style","dramatic render style","painterly night style","watercolor night style","ink and wash night style","dark moody illustration style","atmospheric render style","gouache night scene style","graphic novel night style","pastel night illustration","charcoal night sketch style","dark fantasy architectural style","photorealistic render style","blue-hour editorial style","film noir architectural style","impressionistic night style"] }
+        ]
+      }
+    ]
+  },
+  {
+    id:8, name:"Editorial Render", defaultAr:"1:1",
+    desc:"For magazine-style images, clean, sophisticated and visually striking.",
+    example:"Isometric view, contemporary residence, minimalist contemporary style, white render and warm oak, soft golden afternoon light, editorial architectural photography style --ar 1:1",
+    els:[
+      { key:"F", label:"Focus", sub:"View type & space", ph:"e.g. Isometric view, contemporary residence",
+        groups:[
+          { label:"Views", chips:["Isometric view","Floor plan top view","Site plan top view","Eye-level exterior","Three-quarter view","Close crop detail view","Wide editorial exterior","Floating isometric view"] },
+          { label:"Spaces", chips:["contemporary residence","luxury apartment","minimalist living room","contemporary office building","urban plaza","luxury villa","boutique hotel room","gallery space","penthouse terrace","minimalist kitchen","editorial bathroom","luxury retail space","co-working lounge","private members club","architectural model scene","luxury spa interior","curated dining room","high-end concept store","art-filled apartment","terrace with pool","glass pavilion in landscape","minimal rooftop space"] }
+        ]
+      },
+      { key:"R", label:"Reference", sub:"Architectural style", ph:"e.g. minimalist contemporary style",
+        groups:[
+          { label:"Styles", chips:["minimalist contemporary","luxury contemporary","brutalist","japandi","scandinavian","french modern","raw minimalist","tonal minimalist","organic modern","curated maximalist","kinfolk aesthetic","wabi-sabi","high-gloss modern","biophilic contemporary","editorial minimalist","monochrome modern","warm minimalist","southern european modern","art deco revival","high-end contemporary","museum-like interior","gallery aesthetic"] }
+        ]
+      },
+      { key:"M", label:"Materials", sub:"Strong visual character materials", ph:"e.g. white render and warm oak",
+        groups:[
+          { label:"Combinations", chips:["white render and warm oak","raw board-formed concrete and glass","natural linen and warm oak","travertine and polished brass","white render and natural stone","pale plaster and bouclé","white marble and dark walnut","limestone and warm brass","white plaster and natural fiber","greige render and warm timber","raw concrete and light oak","white marble and matte black","pale stone and woven rattan","white stucco and terracotta","pale limestone and warm brass","natural linen and aged bronze","warm plaster and dry grass","stone and bleached timber","white concrete and fluted oak","cream render and warm teak","pale grey and white oak","smoked glass and warm timber"] }
+        ]
+      },
+      { key:"A", label:"Atmosphere", sub:"Editorial light", ph:"e.g. soft golden afternoon light",
+        groups:[
+          { label:"Light", chips:["soft golden afternoon light","soft overcast diffused light","warm diffused natural light","dramatic side light","soft morning light","raking side light","clean even studio light","filtered window light","warm dappled light","crisp midday light","low winter sun","blue hour light","editorial flash lighting","warm glow afternoon","hazy soft summer light"] },
+          { label:"Mood", chips:["clean and crisp","warm and editorial","moody and sophisticated","minimal and refined","airy and light-filled","calm and considered","warm and layered","fresh and modern","bold and graphic","still and contemplative","sensory and rich","elegant and quiet","understated luxury","editorial precision","curated and intentional"] }
+        ]
+      },
+      { key:"E", label:"Expression", sub:"Visual style", ph:"e.g. editorial architectural photography style",
+        groups:[
+          { label:"Styles", chips:["editorial architectural photography style","hyperrealistic style","magazine render style","clean digital render style","tonal illustration style","flat architectural illustration","minimal line drawing style","pastel editorial illustration","digital painting style","architectural photography style","concept render style","clay render style","collage editorial style","watercolor editorial style","ink editorial style","gouache editorial style","pencil editorial sketch","risograph style","screen print style","linocut editorial style","blueprint style","mixed media editorial style"] }
+        ]
+      }
+    ]
+  },
+  {
+    id:9, name:"Photorealistic Render", defaultAr:"1:1",
+    desc:"For high quality renders with maximum visual realism.",
+    example:"Isometric view, luxury villa, minimalist style, travertine and warm teak, infinity pool, golden hour, depth of field, hyperrealistic style --ar 1:1",
+    els:[
+      { key:"F", label:"Focus", sub:"View type & space", ph:"e.g. Isometric view, luxury villa",
+        groups:[
+          { label:"Views", chips:["Isometric view","Site plan top view","Floor plan top view","Eye-level exterior","Eye-level interior","Three-quarter aerial","Street-level perspective","Low-angle dramatic view"] },
+          { label:"Spaces", chips:["luxury villa","contemporary house","minimalist residence","contemporary office building","cultural center","brutalist complex","boutique hotel","waterfront apartment","luxury penthouse","tropical resort","clifftop residence","desert compound","forest retreat","lakeside house","glass pavilion","modernist museum","luxury retail flagship","architectural landmark","urban residential tower","private members club","luxury spa resort","bespoke family home"] }
+        ]
+      },
+      { key:"R", label:"Reference", sub:"Architectural style", ph:"e.g. minimalist style",
+        groups:[
+          { label:"Styles", chips:["minimalist","brutalist","contemporary","luxury contemporary","tropical modern","mid-century modern","high-tech","organic modern","raw concrete modern","japandi","scandinavian","mediterranean modern","biophilic","desert modern","mountain modern","coastal modern","sustainable modern","glass box modern","monolithic minimal","parametric","deconstructivist","industrial modern"] }
+        ]
+      },
+      { key:"M", label:"Materials", sub:"Specific and detailed materials", ph:"e.g. travertine and warm teak, infinity pool",
+        groups:[
+          { label:"Combinations", chips:["travertine and warm teak","raw board-formed concrete and mature trees","white render and glass","warm oak and white plaster","reflective glass and steel structure","limestone and dark timber","corten steel and glass walls","rammed earth and timber frame","white marble and stainless steel","dark basalt and glass","pale travertine and water feature","bamboo and white render","black concrete and warm oak","polished concrete and brass","aged timber and natural stone","zinc cladding and glass","terracotta and white plaster","copper and glass facade","whitewashed stone and timber","dark brick and steel","volcanic stone and timber","shell stone and whitewash"] }
+        ]
+      },
+      { key:"A", label:"Atmosphere", sub:"Light for maximum realism", ph:"e.g. golden hour, depth of field",
+        groups:[
+          { label:"Light", chips:["golden hour depth of field","dramatic raking side light deep shadows","soft overcast light","warm afternoon light soft shadows","blue hour reflections","harsh midday sun hard shadows","misty morning light","crisp winter light","dappled forest light","twilight glow","tropical noon light","low sun dramatic shadows","warm dusk light","stark white sky light","aerial haze light"] },
+          { label:"Detail", chips:["depth of field","motion blur","lens flare","reflections in glass","sharp foreground detail","atmospheric perspective","bokeh background","water reflections","shadow play","material close-up","soft gradient sky","volumetric light rays","puddle reflections","mist in trees","crisp material textures"] }
+        ]
+      },
+      { key:"E", label:"Expression", sub:"Visual style", ph:"e.g. hyperrealistic style",
+        groups:[
+          { label:"Styles", chips:["hyperrealistic style","photorealistic render style","CGI architectural visualization","editorial architectural photography style","cinematic photography style","drone photography style","ultra-high-definition render style","3D visualization style","concept render style","long-exposure photography style","HDR photography style","digital painting style","night photography style","magazine photography style","documentary photography style","film photography style","large format photography style","high-contrast photography style","architectural photography style","aerial photography style","infrared photography style","motion-blur night photography style"] }
+        ]
+      }
+    ]
+  },
+  {
+    id:10, name:"Sketch & Line Render", defaultAr:"1:1",
+    desc:"For images with sketch, hand-drawn or linear illustration aesthetic.",
+    example:"Isometric view, contemporary house, minimalist style, white render and warm timber, minimal warm color accents, expressive loose ink linework style --ar 1:1",
+    els:[
+      { key:"F", label:"Focus", sub:"View type & space", ph:"e.g. Isometric view, contemporary house",
+        groups:[
+          { label:"Views", chips:["Isometric view","Floor plan top view","Site plan top view","Eye-level sketch perspective","Three-quarter sketch view","Section sketch view","Axonometric sketch view","Bird's eye sketch view"] },
+          { label:"Spaces", chips:["contemporary house","urban plaza","architectural pavilion","cultural center","residential building","library","museum","mixed-use building","art gallery","train station","urban courtyard","beach pavilion","mountain refuge","community center","rooftop pavilion","luxury villa","brutalist apartment","glass tower","farmhouse","studio building","coastal cottage","hillside residence"] }
+        ]
+      },
+      { key:"R", label:"Reference", sub:"Architectural style", ph:"e.g. minimalist style",
+        groups:[
+          { label:"Styles", chips:["contemporary","minimalist","brutalist","organic","industrial","futuristic","sculptural","deconstructivist","vernacular modern","raw concrete","high-tech","expressionist","biomorphic","post-modern","parametric","sustainable modern","mid-century modern","japandi","scandinavian","tropical modern","art deco","neoclassical sketch"] }
+        ]
+      },
+      { key:"M", label:"Materials", sub:"Suggested materials", ph:"e.g. white render and warm timber",
+        groups:[
+          { label:"Combinations", chips:["white render and warm timber","raw concrete and glass","timber structure","concrete and steel","natural stone and timber","brick and concrete","glass and steel frame","rammed earth and timber","corten steel and glass","dark timber and stone","white plaster and wood","bamboo and glass","reclaimed timber and concrete","polished concrete and steel","limestone and timber frame","board-formed concrete and oak","zinc and timber","glass and raw concrete","terracotta and white plaster","dark brick and glass","stone and weathered timber","precast concrete and timber"] }
+        ]
+      },
+      { key:"A", label:"Atmosphere", sub:"Suggested light", ph:"e.g. minimal warm color accents",
+        groups:[
+          { label:"Light & Tone", chips:["minimal warm color accents","soft natural light","dramatic side light","soft diffused light","abstract exploration of light and shadow","monochrome tonal study","pale washes of color","bold black ink and white","sepia toned","blue and white minimal color","single accent color highlight","warm ochre wash","gestural light suggestion","soft grey tones","high-contrast black and white","burnt sienna accent","cool blue wash","warm pencil tones","ink wash shadow","sparse color fields","hatching and cross-hatching tones","graphite monochrome"] }
+        ]
+      },
+      { key:"E", label:"Expression", sub:"Visual style", ph:"e.g. expressive loose ink linework style",
+        groups:[
+          { label:"Styles", chips:["hand-drawn sketch style","pencil sketch style","line drawing style","ink and watercolor hybrid style","loose confident pencil lines quick architectural study style","expressive loose ink linework style","tight technical line drawing style","cross-hatching style","rapidograph line style","brushpen sketch style","charcoal sketch style","graphite shading style","marker sketch style","architectural croquis style","gestural sketch style","stippling style","construction line study style","expressive watercolor and ink style","field sketch style","architectural journal style","loose gouache and line style","digital sketch style"] }
+        ]
+      }
+    ]
+  }
+];
+
+/* ─── STATE ─────────────────────────────────────────────────────────── */
+let tplIdx = 0;
+let stepIdx = 0;
+let vals = {};      // key → typed or auto-assembled string
+let sel = {};       // key → Set of selected chip values
+
+function initState(ti) {
+  tplIdx = ti;
+  stepIdx = 0;
+  vals = {};
+  sel = {};
+  T[ti].els.forEach(el => { vals[el.key] = ''; sel[el.key] = new Set(); });
+}
+
+/* ─── RENDER ─────────────────────────────────────────────────────────── */
+function renderSidebar() {
+  document.getElementById('tplList').innerHTML = T.map((t, i) => `
+    <div class="tpl-item ${i===tplIdx?'active':''}" onclick="selectTpl(${i})">
+      <span class="tpl-num">${String(i+1).padStart(2,'0')}</span>
+      <span class="tpl-name">${t.name}</span>
+    </div>`).join('');
+}
+
+function renderHeader() {
+  const t = T[tplIdx];
+  document.getElementById('tplHeader').innerHTML = `
+    <div class="tpl-tag">Template ${t.id} / ${T.length}</div>
+    <h2>${t.name}</h2>
+    <p>${t.desc}</p>`;
+}
+
+function renderStepper() {
+  const t = T[tplIdx];
+  document.getElementById('stepper').innerHTML = t.els.map((el, i) => {
+    const done = i < stepIdx && vals[el.key];
+    const active = i === stepIdx;
+    const cls = active ? 'active' : (done ? 'done' : '');
+    return `
+      <div class="step ${cls}" onclick="jumpStep(${i})">
+        <div class="step-check"><svg viewBox="0 0 10 8" fill="none" stroke="#1a1a1a" stroke-width="2"><polyline points="1 4 4 7 9 1"/></svg></div>
+        <div class="step-letter">${el.key}</div>
+        <div class="step-name">${el.label}</div>
+      </div>`;
+  }).join('');
+}
+
+function renderPanel() {
+  const t = T[tplIdx];
+  const el = t.els[stepIdx];
+  const chips = sel[el.key];
+
+  const groupsHTML = el.groups.map(g => `
+    <div class="chip-group">
+      <div class="cg-label">${g.label}</div>
+      <div class="chips">
+        ${g.chips.map(c => `
+          <button class="chip ${chips.has(c)?'on':''}"
+            onclick="toggleChip('${el.key}','${c.replace(/'/g,"\\'")}')">
+            ${c}
+          </button>`).join('')}
+      </div>
+    </div>`).join('');
+
+  document.getElementById('elementPanel').innerHTML = `
+    <div class="panel-top">
+      <div class="panel-letter">${el.key}</div>
+      <div class="panel-meta">
+        <div class="panel-label">${el.label}</div>
+        <div class="panel-sublabel">${el.sub}</div>
+      </div>
+    </div>
+    <div class="panel-body">
+      <div class="input-wrap">
+        <input class="el-input" id="elInput"
+          placeholder="${el.ph}"
+          value="${vals[el.key].replace(/"/g,'&quot;')}"
+          oninput="onType('${el.key}', this.value)" />
+        <button class="input-clear" id="inputClear"
+          onclick="clearEl('${el.key}')"
+          style="display:${vals[el.key]?'block':'none'}">×</button>
+      </div>
+      ${groupsHTML}
+    </div>`;
+}
+
+function renderNav() {
+  const t = T[tplIdx];
+  const last = stepIdx === t.els.length - 1;
+  const el = t.els[stepIdx];
+
+  document.getElementById('btnBack').disabled = stepIdx === 0;
+  document.getElementById('stepCounter').innerHTML =
+    `<strong>${stepIdx+1}</strong> of ${t.els.length} — ${el.label}`;
+
+  const btn = document.getElementById('btnNext');
+  if (last) {
+    btn.classList.add('finish');
+    btn.innerHTML = 'Done ✓';
+  } else {
+    btn.classList.remove('finish');
+    btn.innerHTML = 'Next <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>';
+  }
+}
+
+function renderPrompt() {
+  const t = T[tplIdx];
+  const ar = document.getElementById('arSelect').value;
+  const parts = t.els.map(el => vals[el.key].trim()).filter(Boolean);
+
+  // dots
+  document.getElementById('pDots').innerHTML =
+    t.els.map(el => `<div class="p-dot ${vals[el.key].trim()?'on':''}"></div>`).join('');
+
+  const ptEl = document.getElementById('promptText');
+  if (!parts.length) {
+    ptEl.innerHTML = `<span class="pt-empty">Your prompt will appear here as you fill in the FRAME elements…</span>`;
+  } else {
+    const joined = parts.map(p=>`<span>${p}</span>`).join('<span class="pt-sep">, </span>');
+    ptEl.innerHTML = joined + `<span class="pt-sep"> </span><span class="pt-ar">--ar ${ar}</span>`;
+  }
+}
+
+function renderExample() {
+  const t = T[tplIdx];
+  document.getElementById('exBlock').innerHTML = `
+    <div class="ex-label">Full Applied Example</div>
+    <div class="ex-text">${t.example}</div>`;
+}
+
+function render() {
+  renderSidebar();
+  renderHeader();
+  renderStepper();
+  renderPanel();
+  renderNav();
+  renderPrompt();
+  renderExample();
+  document.getElementById('arSelect').value = T[tplIdx].defaultAr;
+}
+
+/* ─── INTERACTIONS ───────────────────────────────────────────────────── */
+function selectTpl(i) {
+  initState(i);
+  render();
+}
+
+function jumpStep(i) {
+  stepIdx = i;
+  renderStepper();
+  renderPanel();
+  renderNav();
+}
+
+function goBack() {
+  if (stepIdx > 0) { stepIdx--; renderStepper(); renderPanel(); renderNav(); }
+}
+
+function goNext() {
+  const t = T[tplIdx];
+  if (stepIdx < t.els.length - 1) {
+    stepIdx++;
+    renderStepper();
+    renderPanel();
+    renderNav();
+  }
+}
+
+function toggleChip(key, val) {
+  const s = sel[key];
+  if (s.has(val)) s.delete(val); else s.add(val);
+  vals[key] = [...s].join(', ');
+  // sync input
+  const inp = document.getElementById('elInput');
+  if (inp) {
+    inp.value = vals[key];
+    document.getElementById('inputClear').style.display = vals[key] ? 'block' : 'none';
+  }
+  renderStepper();
+  renderPanel();
+  renderPrompt();
+}
+
+function onType(key, v) {
+  vals[key] = v;
+  sel[key].clear();
+  document.getElementById('inputClear').style.display = v ? 'block' : 'none';
+  renderStepper();
+  // re-render chips to clear selections
+  const t = T[tplIdx]; const el = t.els[stepIdx];
+  if (el.key === key) {
+    // just update chip classes without full re-render
+    el.groups.forEach(g => g.chips.forEach(c => {
+      const btn = [...document.querySelectorAll('.chip')].find(b=>b.textContent.trim()===c && b.closest('#elementPanel'));
+      if(btn) btn.classList.toggle('on', sel[key].has(c));
+    }));
+  }
+  renderPrompt();
+}
+
+function clearEl(key) {
+  vals[key] = '';
+  sel[key].clear();
+  const inp = document.getElementById('elInput');
+  if (inp) { inp.value = ''; }
+  document.getElementById('inputClear').style.display = 'none';
+  renderStepper();
+  renderPanel();
+  renderPrompt();
+}
+
+function resetCurrent() {
+  initState(tplIdx);
+  render();
+}
+
+function resetAll() { resetCurrent(); }
+
+function buildPrompt() { renderPrompt(); }
+
+function copyPrompt() {
+  const t = T[tplIdx];
+  const ar = document.getElementById('arSelect').value;
+  const parts = t.els.map(el => vals[el.key].trim()).filter(Boolean);
+  const text = parts.join(', ') + (parts.length ? ` --ar ${ar}` : '');
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('btnCopy');
+    btn.classList.add('ok');
+    btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Copied!`;
+    const t2 = document.getElementById('toast');
+    t2.classList.add('show');
+    setTimeout(()=>{ btn.classList.remove('ok'); btn.innerHTML=`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy Prompt`; t2.classList.remove('show'); }, 2200);
+  });
+}
+
+/* ─── INIT ───────────────────────────────────────────────────────────── */
+initState(0);
+render();
+</script>
+</body>
+</html>
