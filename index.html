@@ -626,6 +626,110 @@
 <div class="toast" id="toast">Prompt copied!</div>
 
 <script>
+/* ─── SHARED KEYWORD LIBRARY (from Archez 400+ Keywords Guide) ──────── */
+
+// F — Views
+const V_PLAN   = ["Floor plan top view","Site plan top view","Urban masterplan top view","Campus masterplan top view","Aerial top view","Axonometric view"];
+const V_ISO    = ["Isometric view","Illustrated isometric view","Axonometric exploded view","Three-quarter view"];
+const V_PERSP  = ["Exterior perspective eye level","Bird's eye view","Aerial perspective","Drone perspective","Close up detail","Product top view","Front view","Side view","Top-down view"];
+
+// F — Context / Surroundings
+const CTX_NAT  = ["Dense pine forest","Tropical jungle","Coastal dunes","Desert plateau","Rolling hills","Rocky cliffs","Foggy valley","Beside a calm lake","Snowy mountains","Beside a river","Grassy meadow","Rainforest edge","Flower garden","Savannah plain","In a vineyard","On a cliff","Surrounded by dense forest","Open desert landscape"];
+const CTX_URB  = ["Urban street context","City skyline background","Historic city center","Waterfront promenade","Urban rooftop","Dense urban block","Suburban neighborhood","Industrial district"];
+
+// F — Composition
+const COMP     = ["Symmetrical composition","Asymmetrical layout","Layered volumes","Cantilevered structure","Floating volume","Interlocking spaces","Nested volumes","Linear composition","Clustered volumes","Stepped terraces","Cascading levels","Open and closed balance","Framed view","Compressed and released space"];
+
+// R — Architectural Styles (all 28 from guide)
+const STYLES   = ["Minimalist","Brutalist","Japandi","Scandinavian","Mid-century modern","Wabi-sabi","Biophilic","Industrial","Contemporary","Organic","Deconstructivist","Vernacular","Mediterranean","Tropical modern","Art Deco","Bauhaus","High-tech","Neoclassical","Postmodern","Colonial","Gothic","Renaissance","Victorian","Modernist","Parametric","Futuristic","Sustainable","Passive house"];
+
+// M — Materials by category
+const M_WOOD   = ["Warm oak","Weathered wood","Raw timber","Reclaimed wood","Dark walnut","Pale ash","Smoked oak","Bamboo","Teak","Pine","Natural cedar","Aged timber","Whitewashed wood","Bleached oak"];
+const M_CONC   = ["Exposed concrete","Polished concrete","Board-formed concrete","Raw concrete","Fair-faced concrete","Light grey concrete","Pigmented concrete","Terrazzo"];
+const M_METAL  = ["Corten steel","Polished brass","Matte black metal","Brushed aluminum","Aged copper","Weathered iron","Blackened steel","Perforated steel","Raw steel"];
+const M_STONE  = ["Natural stone","Travertine","Slate","Limestone","Rough granite","Smooth marble","Sandstone","Basalt","Fieldstone","Stacked stone"];
+const M_OTHER  = ["Rammed earth","White render","Hand-made brick","Woven rattan","Natural linen","Glass block","Ceramic tiles","Terracotta","Natural clay","Jute","Washi paper","Resin panel","Polished plaster","Venetian plaster"];
+const M_FINISH = ["Matte finish","Polished finish","Brushed finish","Weathered patina","Raw unfinished","Rough hewn","Smooth polished","Aged patina","Burnished","Distressed","Waxed","Lacquered","Anodized","Sand-blasted"];
+const M_TEX    = ["Rough texture","Smooth texture","Tactile surface","Ribbed surface","Striated surface","Corrugated surface","Woven texture","Perforated surface","Embossed pattern","Layered surface"];
+
+// M — Vegetation
+const M_VEGI   = ["Climbing ivy on walls","Vertical green wall","Planter integrated into facade","Tree growing through roof","Lush rooftop garden","Indoor tree in open atrium","Hanging vines","Bamboo screen divider"];
+const M_VEGS   = ["Tropical plants around the structure","Ornamental grasses along the path","Wildflowers surrounding the building","Moss-covered stones","Cactus garden","Potted palms","Fern clusters","Water lilies in reflective pond","Sculptural desert plants","Bonsai in concrete planter","Olive trees","Mature pine forest","Native coastal grasses","Lush tropical vegetation"];
+
+// M — Architectural Elements
+const M_FACADE = ["Floor to ceiling glass","Vertical wooden slats","Perforated steel panel","Horizontal ribbon windows","Deep window reveals","Cantilevered volume","Green roof","Solar panels on roof","Wrap-around porch","Open terrace","Rooftop terrace","Recessed balconies","Timber cladding"];
+const M_INT    = ["Double-height windows","Exposed beams","Open floor plan","Skylight opening","Sunken living room","Mezzanine level","Floating staircase","Inner courtyard","Integrated storage","Platform bed","Open shelving"];
+const M_LAND   = ["Stone pathways","Timber boardwalk","Infinity pool","Natural stone pool","Pergola structure","Water feature","Seating area","Outdoor dining","Observation deck"];
+
+// A — Light & Atmosphere
+const LIGHT    = ["Golden hour","Soft morning light","Blue hour","Overcast diffused light","Dramatic side lighting","Warm interior lighting","Candlelight","Moonlight","Volumetric light","Backlit","Ambient light","Dappled light through trees","Deep blue night sky","Filtered light","Low sunlight","Morning sun","Harsh midday sun","Foggy light","Diffused skylight","Rim light"];
+const ATMOS    = ["Serene","Cozy","Dramatic","Moody","Ethereal","Raw","Refined","Warm","Airy","Contemplative","Vibrant","Grounded","Luxurious","Minimal","Playful","Calm","Intimate","Dreamlike","Nostalgic","Cinematic","Mysterious"];
+const PEOPLE   = ["Human figures for scale","People walking","Silhouettes of people","Architect reviewing plans","Couple sitting","Children playing","People gathering","Lone figure","Crowd of people","Person standing by window","Figures in the distance"];
+
+// E — Visual Styles
+const VSTYLES  = ["Photorealistic style","Hyperrealistic style","Editorial architectural photography style","Architectural illustration style","Hand-drawn sketch style","Pencil sketch style","Ink drawing style","Watercolor wash style","Clay render style","Digital painting style","Collage style","Line drawing style","Mixed media style","Ink and watercolor hybrid style","Botanical illustration style","Pastel color illustration style","Quick architectural study style","Expressive loose ink linework style"];
+const MOTION   = ["Low motion","High motion","Slow pan","Cinematic movement","Gentle breeze in vegetation","Water flowing","Light shifting","Camera drift","Loop","Subtle camera movement","Wind in trees","Reflections on water moving","Clouds drifting","Smoke rising","Light flickering"];
+
+// ─── Shared element builders ────────────────────────────────────────────
+function fEl(ph, spaceChips) {
+  return { key:"F", label:"Focus", sub:"View type, space & context", ph,
+    groups:[
+      { label:"Floor Plan Views", chips: V_PLAN },
+      { label:"Isometric Views",  chips: V_ISO  },
+      { label:"Perspective Views",chips: V_PERSP },
+      { label:"Spaces",           chips: spaceChips },
+      { label:"Context — Natural",chips: CTX_NAT },
+      { label:"Context — Urban",  chips: CTX_URB },
+      { label:"Composition",      chips: COMP   },
+    ]
+  };
+}
+
+function rEl(ph) {
+  return { key:"R", label:"Reference", sub:"Architectural style", ph,
+    groups:[{ label:"Styles", chips: STYLES }]
+  };
+}
+
+function mEl(ph, combos) {
+  return { key:"M", label:"Materials", sub:"Qualify your materials, finishes & elements", ph,
+    groups:[
+      { label:"Curated Combinations", chips: combos },
+      { label:"Wood",                 chips: M_WOOD   },
+      { label:"Concrete",             chips: M_CONC   },
+      { label:"Metal",                chips: M_METAL  },
+      { label:"Stone",                chips: M_STONE  },
+      { label:"Other Materials",      chips: M_OTHER  },
+      { label:"Finishes",             chips: M_FINISH },
+      { label:"Textures",             chips: M_TEX    },
+      { label:"Vegetation — Integrated",   chips: M_VEGI  },
+      { label:"Vegetation — Surroundings", chips: M_VEGS  },
+      { label:"Facade Elements",      chips: M_FACADE },
+      { label:"Interior Elements",    chips: M_INT    },
+      { label:"Landscaping",          chips: M_LAND   },
+    ]
+  };
+}
+
+function aEl(ph) {
+  return { key:"A", label:"Atmosphere", sub:"Light, mood & human scale", ph,
+    groups:[
+      { label:"Light",          chips: LIGHT  },
+      { label:"Atmosphere",     chips: ATMOS  },
+      { label:"People & Scale", chips: PEOPLE },
+    ]
+  };
+}
+
+function eEl(ph) {
+  return { key:"E", label:"Expression", sub:"Visual style & motion", ph,
+    groups:[
+      { label:"Visual Styles",  chips: VSTYLES },
+      { label:"Motion / Video", chips: MOTION  },
+    ]
+  };
+}
+
 /* ─── DATA ─────────────────────────────────────────────────────────── */
 const T = [
   {
@@ -633,33 +737,11 @@ const T = [
     desc:"For villas, houses, residences, cabins and any residential building seen from the outside.",
     example:"Isometric view, luxury villa, minimalist style, white render and warm oak, golden hour, soft shadows, hyperrealistic style --ar 1:1",
     els:[
-      { key:"F", label:"Focus", sub:"View type & space", ph:"e.g. Isometric view, luxury villa",
-        groups:[
-          { label:"Views", chips:["Isometric view","Site plan top view","Bird's eye view","Street-level perspective","Eye-level exterior","Three-quarter view","Aerial view","Axonometric view","Section perspective","Worm's eye view","Oblique aerial view","Ground-level close-up"] },
-          { label:"Spaces", chips:["contemporary house","luxury villa","minimalist residence","mountain cabin","beach house","urban townhouse","country estate","farmhouse","coastal home","desert retreat","forest cabin","lakeside cottage","cliff house","split-level home","floating home","glass pavilion","courtyard house","stone farmhouse","prairie house","prefab home"] }
-        ]
-      },
-      { key:"R", label:"Reference", sub:"Architectural style", ph:"e.g. minimalist style",
-        groups:[
-          { label:"Styles", chips:["minimalist","brutalist","japandi","scandinavian","mid-century modern","tropical modern","mediterranean","wabi-sabi","contemporary","industrial","organic modern","biophilic","art deco","bauhaus","neoclassical","craftsman","georgian","farmhouse modern","sustainable modern","high-tech","deconstructivist","vernacular modern","raw minimalist","post-modern"] }
-        ]
-      },
-      { key:"M", label:"Materials", sub:"Always qualify your materials", ph:"e.g. white render and warm oak",
-        groups:[
-          { label:"Combinations", chips:["white render and warm oak","board-formed concrete and glass","weathered timber and natural stone","travertine and warm teak","corten steel and glass","rammed earth and timber","white stucco and terracotta","polished concrete and black steel","limestone and warm timber","cedar and dark metal","zinc cladding and timber","reclaimed brick and steel","glass curtain wall and raw concrete","dark timber cladding and stone","pale limestone and glass","natural slate and timber","white marble and warm brass","bamboo and white render","black steel and aged oak","raw concrete and copper cladding","white plaster and exposed brick","lava stone and light timber"] }
-        ]
-      },
-      { key:"A", label:"Atmosphere", sub:"Light and atmosphere", ph:"e.g. golden hour, soft shadows",
-        groups:[
-          { label:"Light", chips:["golden hour","soft morning light","overcast diffused light","warm afternoon light","dramatic side light","blue hour twilight","harsh midday sun","dappled forest light","misty morning light","winter soft light","tropical noon light","stormy overcast sky","low winter sun","crisp autumn light","hazy summer glow"] },
-          { label:"Atmosphere", chips:["soft shadows","serene atmosphere","moody","warm and inviting","dramatic","peaceful and quiet","vibrant","minimalist calm","lush and verdant","crisp and clear","ethereal","cinematic","contemplative","raw and wild","open and airy"] }
-        ]
-      },
-      { key:"E", label:"Expression", sub:"Visual style", ph:"e.g. hyperrealistic style",
-        groups:[
-          { label:"Styles", chips:["hyperrealistic style","editorial architectural photography style","watercolor wash style","architectural illustration style","hand-drawn sketch style","clay render style","digital painting style","pencil sketch style","ink drawing style","pastel illustration style","concept art style","charcoal sketch style","flat design style","isometric illustration style","linocut print style","gouache painting style","blueprint style","cross-hatching style","screen print style","risograph style","oil painting style","mixed media style"] }
-        ]
-      }
+      fEl("e.g. Isometric view, luxury villa", ["Contemporary house","Luxury villa","Minimalist residence","Mountain cabin","Beach house","Urban townhouse","Country estate","Farmhouse","Coastal home","Desert retreat","Forest cabin","Lakeside cottage","Cliff house","Split-level home","Floating home","Glass pavilion","Courtyard house","Stone farmhouse","Prairie house","Prefab home"]),
+      rEl("e.g. minimalist style"),
+      mEl("e.g. white render and warm oak", ["White render and warm oak","Board-formed concrete and glass","Weathered timber and natural stone","Travertine and warm teak","Corten steel and glass","Rammed earth and timber","White stucco and terracotta","Polished concrete and black steel","Limestone and warm timber","Cedar and dark metal","Zinc cladding and timber","Reclaimed brick and steel","Glass curtain wall and raw concrete","Dark timber cladding and stone","Pale limestone and glass","Natural slate and timber","White marble and warm brass","Bamboo and white render","Black steel and aged oak","Raw concrete and copper cladding","White plaster and exposed brick","Lava stone and light timber"]),
+      aEl("e.g. golden hour, soft shadows"),
+      eEl("e.g. hyperrealistic style")
     ]
   },
   {
@@ -667,33 +749,11 @@ const T = [
     desc:"For living rooms, bedrooms, kitchens, bathrooms and any residential interior space.",
     example:"Isometric view, japandi living room, japandi style, natural oak and linen textiles, soft morning light, serene atmosphere, architectural illustration style --ar 1:1",
     els:[
-      { key:"F", label:"Focus", sub:"View type & space", ph:"e.g. Isometric view, japandi living room",
-        groups:[
-          { label:"Views", chips:["Floor plan top view","Isometric view","Axonometric interior view","Eye-level interior perspective","Three-quarter interior view","Section cutaway view","Wide-angle interior shot","Close-up detail view"] },
-          { label:"Spaces", chips:["open plan living room","minimalist bedroom","japandi kitchen","luxury bathroom","master suite","studio apartment","loft","home library","meditation room","home office","dining room","walk-in wardrobe","children's room","open kitchen with island","sunlit reading nook","compact city apartment","rooftop penthouse interior","concrete loft interior","converted warehouse interior","cozy mountain retreat interior"] }
-        ]
-      },
-      { key:"R", label:"Reference", sub:"Interior style", ph:"e.g. japandi style",
-        groups:[
-          { label:"Styles", chips:["minimalist","japandi","scandinavian","mid-century modern","wabi-sabi","industrial","boho","contemporary","luxury contemporary","french modern","coastal","maximalist","art deco interior","biophilic interior","brutalist interior","organic modern","mediterranean interior","rustic modern","high-gloss modern","tonal minimalist","eclectic curated","muji-inspired"] }
-        ]
-      },
-      { key:"M", label:"Materials", sub:"Always qualify your materials", ph:"e.g. natural oak and linen textiles",
-        groups:[
-          { label:"Combinations", chips:["warm oak and white plaster","pale ash and linen textiles","teak and brass fixtures","rammed earth and natural fiber","marble and warm brass","exposed concrete and warm wood","travertine and matte black metal","smoked oak and boucle upholstery","walnut and cream plaster","rattan and white linen","terracotta tiles and warm plaster","stone and aged oak","grey concrete and warm leather","white plaster and gold accents","zellige tiles and white plaster","limewash walls and light oak","dark walnut and marble","bamboo and white cotton","glass and blackened steel","raw oak and white gypsum","painted brick and reclaimed wood","dark linen and warm plaster"] }
-        ]
-      },
-      { key:"A", label:"Atmosphere", sub:"Light and atmosphere", ph:"e.g. soft morning light, serene atmosphere",
-        groups:[
-          { label:"Light", chips:["soft morning light","warm afternoon light","diffused skylight","golden hour through floor-to-ceiling windows","soft candlelight","dramatic spotlight","overcast diffused light","warm pendant light","dappled natural light","moonlight glow","warm evening ambient light","bright airy daylight","soft filtered light through sheer curtains","dramatic raking window light","warm low lamp light"] },
-          { label:"Atmosphere", chips:["serene atmosphere","cozy and warm","moody","airy and bright","intimate","calm and minimal","warm and inviting","fresh and clean","editorial and crisp","rustic and earthy","romantic","meditative silence","vibrant and layered","luxurious and still","raw and textured"] }
-        ]
-      },
-      { key:"E", label:"Expression", sub:"Visual style", ph:"e.g. architectural illustration style",
-        groups:[
-          { label:"Styles", chips:["hyperrealistic style","editorial architectural photography style","architectural illustration style","clay render style","watercolor wash style","digital painting style","line drawing style","pencil sketch style","flat color illustration style","pastel illustration style","ink and wash style","isometric illustration style","cutaway illustration style","concept render style","gouache illustration style","collage style","charcoal sketch style","blueprint style","magazine render style","risograph style","tonal illustration style","hand-drawn architectural style"] }
-        ]
-      }
+      fEl("e.g. Isometric view, japandi living room", ["Open plan living room","Minimalist bedroom","Japandi kitchen","Luxury bathroom","Master suite","Studio apartment","Loft","Home library","Meditation room","Home office","Dining room","Walk-in wardrobe","Children's room","Open kitchen with island","Sunlit reading nook","Compact city apartment","Rooftop penthouse interior","Concrete loft interior","Converted warehouse interior","Cozy mountain retreat interior"]),
+      rEl("e.g. japandi style"),
+      mEl("e.g. natural oak and linen textiles", ["Warm oak and white plaster","Pale ash and linen textiles","Teak and brass fixtures","Rammed earth and natural fiber","Marble and warm brass","Exposed concrete and warm wood","Travertine and matte black metal","Smoked oak and bouclé upholstery","Walnut and cream plaster","Rattan and white linen","Terracotta tiles and warm plaster","Stone and aged oak","Grey concrete and warm leather","White plaster and gold accents","Zellige tiles and white plaster","Limewash walls and light oak","Dark walnut and marble","Bamboo and white cotton","Glass and blackened steel","Raw oak and white gypsum","Painted brick and reclaimed wood","Dark linen and warm plaster"]),
+      aEl("e.g. soft morning light, serene atmosphere"),
+      eEl("e.g. architectural illustration style")
     ]
   },
   {
@@ -701,33 +761,11 @@ const T = [
     desc:"For gardens, plazas, parks, terraces and any exterior landscape space.",
     example:"Isometric view, contemporary rooftop garden, biophilic style, timber decking and raised planting beds, soft morning light, serene and peaceful, watercolor wash style --ar 1:1",
     els:[
-      { key:"F", label:"Focus", sub:"View type & space", ph:"e.g. Isometric view, contemporary rooftop garden",
-        groups:[
-          { label:"Views", chips:["Site plan top view","Isometric view","Bird's eye view","Eye-level landscape view","Aerial perspective","Section landscape view","Three-quarter aerial view","Ground-level garden view"] },
-          { label:"Spaces", chips:["residential garden","urban plaza","rooftop garden","botanical garden","coastal park","zen garden","tropical resort garden","urban courtyard","memorial garden","sensory garden","community park","waterfront promenade","public square","healing garden","food forest","vertical garden wall","sculpture garden","ornamental meadow","pocket park","rain garden","wildflower meadow","terraced hillside garden"] }
-        ]
-      },
-      { key:"R", label:"Reference", sub:"Landscape design style", ph:"e.g. biophilic style",
-        groups:[
-          { label:"Styles", chips:["minimalist","biophilic","contemporary","japanese zen","mediterranean","tropical","sustainable","botanical","formal english","naturalistic","prairie landscape","japanese stroll garden","moorish","coastal native","modernist landscape","dutch new perennial","dry garden","rain garden","forest bathing","edible landscape","sensory garden","xeriscape"] }
-        ]
-      },
-      { key:"M", label:"Materials", sub:"Materials and vegetation", ph:"e.g. timber decking and raised planting beds",
-        groups:[
-          { label:"Combinations", chips:["natural stone paving and native planting","timber decking and lush vegetation","permeable stone and timber seating","raked gravel and natural stone","travertine and tropical planting","weathered timber and coastal grasses","wildflower meadow and stone paths","bamboo and water feature","gravel and ornamental grasses","mossy stones and ferns","terracotta and olive trees","rusted steel planters and lavender","white gravel and dark hedges","decking and raised vegetable beds","brick paving and espaliered trees","concrete pavers and lush groundcover","reclaimed stone and meadow planting","exposed aggregate and timber screens","limestone terrace and citrus trees","granite setts and formal hedging","river stones and bamboo","timber boardwalk and reeds"] }
-        ]
-      },
-      { key:"A", label:"Atmosphere", sub:"Light and atmosphere", ph:"e.g. soft morning light, serene and peaceful",
-        groups:[
-          { label:"Light", chips:["soft morning light","warm afternoon light","golden hour","soft overcast light","ambient twilight","harsh midday sun","dappled tree light","blue hour glow","misty dawn light","winter light","spring bloom light","dramatic storm light","hazy summer light","crisp autumn light","gentle evening light"] },
-          { label:"Atmosphere", chips:["serene and peaceful","lush and vibrant","calm","warm and inviting","botanical","wild and naturalistic","meditative","fresh and dewy","vibrant and blooming","crisp and minimal","lush and tropical","overgrown and romantic","structured and formal","open and airy","earthy and grounding"] }
-        ]
-      },
-      { key:"E", label:"Expression", sub:"Visual style", ph:"e.g. watercolor wash style",
-        groups:[
-          { label:"Styles", chips:["architectural illustration style","watercolor wash style","botanical illustration style","editorial architectural photography style","hand-drawn sketch style","digital painting style","pencil sketch style","gouache illustration style","ink and wash style","pastel illustration style","flat color plan style","linocut print style","naturalistic painting style","collage style","charcoal sketch style","screen print style","risograph style","vintage botanical print style","japanese woodblock print style","isometric illustration style","concept render style","mixed media style"] }
-        ]
-      }
+      fEl("e.g. Isometric view, contemporary rooftop garden", ["Residential garden","Urban plaza","Rooftop garden","Botanical garden","Coastal park","Zen garden","Tropical resort garden","Urban courtyard","Memorial garden","Sensory garden","Community park","Waterfront promenade","Public square","Healing garden","Food forest","Vertical garden wall","Sculpture garden","Ornamental meadow","Pocket park","Rain garden","Wildflower meadow","Terraced hillside garden"]),
+      rEl("e.g. biophilic style"),
+      mEl("e.g. timber decking and raised planting beds", ["Natural stone paving and native planting","Timber decking and lush vegetation","Permeable stone and timber seating","Raked gravel and natural stone","Travertine and tropical planting","Weathered timber and coastal grasses","Wildflower meadow and stone paths","Bamboo and water feature","Gravel and ornamental grasses","Mossy stones and ferns","Terracotta and olive trees","Rusted steel planters and lavender","White gravel and dark hedges","Decking and raised vegetable beds","Brick paving and espaliered trees","Concrete pavers and lush groundcover","Reclaimed stone and meadow planting","Exposed aggregate and timber screens","Limestone terrace and citrus trees","Granite setts and formal hedging","River stones and bamboo","Timber boardwalk and reeds"]),
+      aEl("e.g. soft morning light, serene and peaceful"),
+      eEl("e.g. watercolor wash style")
     ]
   },
   {
@@ -735,33 +773,11 @@ const T = [
     desc:"For chairs, tables, sofas, wardrobes, lamps and any furniture piece.",
     example:"Front view, japandi lounge chair, japandi style, pale ash wood frame and woven rattan seat, soft diffused natural light, soft toned wall, product illustration style --ar 4:5",
     els:[
-      { key:"F", label:"Focus", sub:"View type & furniture piece", ph:"e.g. Front view, japandi lounge chair",
-        groups:[
-          { label:"Views", chips:["Product top view","Front view","Side view","Isometric view","Three-quarter view","Close-up detail view","Flat lay view","Studio shot view","Lifestyle context view","Exploded view"] },
-          { label:"Pieces", chips:["lounge chair","dining table","sofa","wardrobe","coffee table","floor lamp","sideboard","bed frame","dining chair","shelving unit","desk","armchair","bar stool","bench","daybed","pendant lamp","console table","side table","chaise longue","modular sofa","rocking chair","cantilevered chair","credenza","bedside table","pouffe","bookshelf"] }
-        ]
-      },
-      { key:"R", label:"Reference", sub:"Design style", ph:"e.g. japandi style",
-        groups:[
-          { label:"Styles", chips:["japandi","mid-century modern","wabi-sabi","minimalist","scandinavian","contemporary","industrial","organic modern","art deco","bauhaus","french modern","italian modernism","traditional","maximalist","coastal","brutalist furniture","high-tech","kinfolk-inspired","tonal minimalist","luxe minimal","hand-crafted rustic","post-modern"] }
-        ]
-      },
-      { key:"M", label:"Materials", sub:"Always qualify your materials", ph:"e.g. pale ash wood frame and woven rattan seat",
-        groups:[
-          { label:"Materials", chips:["pale ash wood frame","smoked walnut","raw unfinished oak","polished brass","natural rattan","bouclé upholstery","natural linen","white marble","warm teak","matte black steel","cane webbing","aged bronze","light oak and leather","blackened steel and walnut","ceramic and brass","recycled plastic and steel","bent plywood","saddle leather","velvet upholstery","terrazzo top","woven seagrass","bleached oak","ribbed glass","white lacquer","dark stained timber","woven wool upholstery"] }
-        ]
-      },
-      { key:"A", label:"Atmosphere", sub:"Light and context", ph:"e.g. soft diffused natural light, soft toned wall",
-        groups:[
-          { label:"Light", chips:["soft diffused natural light","warm ambient light","soft side light","warm volumetric evening light","dark moody background","studio lighting","dramatic spotlight","clean white studio light","warm window light","soft overhead light","hazy backlight","crisp daylight","editorial studio flash","warm low light","high-contrast dramatic light"] },
-          { label:"Context", chips:["white background","minimalist workspace","serene bedroom context","soft toned wall","warm living room setting","outdoor terrace","gallery setting","editorial magazine spread","textured plaster wall","stone floor","concrete studio floor","linen curtain backdrop","natural light studio","warm toned interior","minimal shelf display"] }
-        ]
-      },
-      { key:"E", label:"Expression", sub:"Visual style", ph:"e.g. product illustration style",
-        groups:[
-          { label:"Styles", chips:["product illustration style","editorial architectural photography style","hyperrealistic style","pencil sketch style with material annotations","clay render style","line drawing style","flat design style","technical drawing style","isometric product illustration","concept render style","digital painting style","watercolor wash style","marker sketch style","exploded diagram style","gouache illustration style","pastel product illustration","charcoal sketch style","blueprint style","ink drawing style","mixed media style","3D render style","hand-drawn product style"] }
-        ]
-      }
+      fEl("e.g. Front view, japandi lounge chair", ["Lounge chair","Dining table","Sofa","Wardrobe","Coffee table","Floor lamp","Sideboard","Bed frame","Dining chair","Shelving unit","Desk","Armchair","Bar stool","Bench","Daybed","Pendant lamp","Console table","Side table","Chaise longue","Modular sofa","Rocking chair","Cantilevered chair","Credenza","Bedside table","Pouffe","Bookshelf"]),
+      rEl("e.g. japandi style"),
+      mEl("e.g. pale ash wood frame and woven rattan seat", ["Pale ash wood frame and woven rattan seat","Smoked walnut and bouclé upholstery","Raw unfinished oak and saddle leather","Polished brass and white marble","Natural rattan and natural linen","Matte black steel and cane webbing","Aged bronze and warm teak","Light oak and leather","Blackened steel and walnut","Ceramic and brass","Bent plywood and steel","Velvet upholstery and dark timber","Terrazzo top and blackened steel","Woven seagrass and bleached oak","Ribbed glass and warm brass","White lacquer and chrome","Dark stained timber and stone","Woven wool and raw oak","Recycled plastic and polished steel","Linen and aged copper"]),
+      aEl("e.g. soft diffused natural light, soft toned wall"),
+      eEl("e.g. product illustration style")
     ]
   },
   {
@@ -769,33 +785,11 @@ const T = [
     desc:"For illustrations of buildings and spaces with a defined artistic style.",
     example:"Illustrated isometric view, mixed-use building, contemporary style, glass and concrete structure, warm interior lighting, vibrant urban setting, architectural illustration style --ar 1:1",
     els:[
-      { key:"F", label:"Focus", sub:"View type & space", ph:"e.g. Illustrated isometric view, mixed-use building",
-        groups:[
-          { label:"Views", chips:["Illustrated floor plan","Illustrated isometric view","Illustrated aerial view","Illustrated section perspective","Illustrated three-quarter view","Illustrated bird's eye view","Illustrated street-level view","Illustrated axonometric view"] },
-          { label:"Spaces", chips:["contemporary apartment","mixed-use building","cultural center","artist studio","museum","library","hotel","residential building","civic hall","concert hall","sports pavilion","train station","airport terminal","university campus","rooftop pavilion","urban market hall","waterfront museum","residential tower","performing arts center","adaptive reuse building","co-working space","community center"] }
-        ]
-      },
-      { key:"R", label:"Reference", sub:"Architectural style", ph:"e.g. contemporary style",
-        groups:[
-          { label:"Styles", chips:["minimalist","contemporary","brutalist","futuristic","organic","industrial","sustainable","high-tech","parametric","deconstructivist","neoclassical revival","expressionist","vernacular modern","biomorphic","metabolist","post-modern","critical regionalism","sculptural architecture","raw brutalist","new baroque","civic monumental","adaptive reuse"] }
-        ]
-      },
-      { key:"M", label:"Materials", sub:"Structural materials", ph:"e.g. glass and concrete structure",
-        groups:[
-          { label:"Combinations", chips:["glass and concrete structure","warm timber and polished concrete","board-formed concrete and glass","white render and warm oak","exposed steel and glass","natural stone and timber","raw concrete and copper cladding","perforated aluminum and glass","brick and exposed concrete","terracotta panels and glass","corten steel and timber","rammed earth and glass","travertine and steel","black steel and white render","bamboo and glass","timber lattice and glass","stone and weathered bronze","dark brick and glass","zinc cladding and timber","precast concrete and glazing","textured concrete and warm oak","glass fiber reinforced concrete"] }
-        ]
-      },
-      { key:"A", label:"Atmosphere", sub:"Light and atmosphere", ph:"e.g. warm interior lighting, vibrant urban setting",
-        groups:[
-          { label:"Light", chips:["soft diffused light","warm interior lighting","golden hour light","dramatic overhead light","soft overcast light","dramatic raking light","dappled courtyard light","blue hour exterior","warm spotlight","misty morning light","crisp winter light","bright summer noon","twilight glow","theatrical spotlight","dramatic storm light"] },
-          { label:"Atmosphere", chips:["serene","vibrant urban setting","contemplative","warm and inviting","dramatic","civic and monumental","intimate","bold and graphic","ethereal","raw and powerful","playful","meditative","festive","industrial","bustling and active"] }
-        ]
-      },
-      { key:"E", label:"Expression", sub:"Visual style", ph:"e.g. architectural illustration style",
-        groups:[
-          { label:"Styles", chips:["architectural illustration style","watercolor wash style","hand-drawn ink style","digital painting style","ink and watercolor hybrid style","pencil sketch style","pastel color illustration style","gouache painting style","linocut print style","charcoal sketch style","blueprint style","risograph style","flat color illustration style","screen print style","japanese woodblock print style","oil painting style","mixed media style","collage style","vintage poster style","concept art style","isometric illustration style","editorial illustration style"] }
-        ]
-      }
+      fEl("e.g. Illustrated isometric view, mixed-use building", ["Contemporary apartment","Mixed-use building","Cultural center","Artist studio","Museum","Library","Hotel","Residential building","Civic hall","Concert hall","Sports pavilion","Train station","Airport terminal","University campus","Rooftop pavilion","Urban market hall","Waterfront museum","Residential tower","Performing arts center","Adaptive reuse building","Co-working space","Community center"]),
+      rEl("e.g. contemporary style"),
+      mEl("e.g. glass and concrete structure", ["Glass and concrete structure","Warm timber and polished concrete","Board-formed concrete and glass","White render and warm oak","Exposed steel and glass","Natural stone and timber","Raw concrete and copper cladding","Perforated aluminum and glass","Brick and exposed concrete","Terracotta panels and glass","Corten steel and timber","Rammed earth and glass","Travertine and steel","Black steel and white render","Bamboo and glass","Timber lattice and glass","Stone and weathered bronze","Dark brick and glass","Zinc cladding and timber","Precast concrete and glazing","Textured concrete and warm oak","Glass fiber reinforced concrete"]),
+      aEl("e.g. warm interior lighting, vibrant urban setting"),
+      eEl("e.g. architectural illustration style")
     ]
   },
   {
@@ -803,100 +797,35 @@ const T = [
     desc:"For masterplans, site plans, urban blocks and large scale developments.",
     example:"Urban masterplan top view, mixed-use development, contemporary urban development, residential blocks and green corridors, soft natural light, architectural illustration style --ar 1:1",
     els:[
-      { key:"F", label:"Focus", sub:"View type & scale", ph:"e.g. Urban masterplan top view, mixed-use development",
-        groups:[
-          { label:"Views", chips:["Urban masterplan top view","Site plan top view","Isometric view","Aerial perspective","Bird's eye view","3D aerial masterplan","Illustrated masterplan view","Colored site plan view"] },
-          { label:"Scales", chips:["mixed-use development","residential development","urban block","waterfront development","campus","urban plaza","transit hub","sports district","cultural quarter","tech campus","eco village","smart city district","waterfront regeneration","market district","new town center","industrial adaptive reuse","university campus","business park","health campus","waterfront marina district","affordable housing estate","urban infill development"] }
-        ]
-      },
-      { key:"R", label:"Reference", sub:"Development type", ph:"e.g. contemporary urban development",
-        groups:[
-          { label:"Types", chips:["contemporary urban","sustainable","mixed-use","residential","waterfront","campus","transit-oriented","new urbanism","smart city","eco district","walkable urban","car-free urban","biophilic urban","culturally-led regeneration","industrial adaptive reuse","affordable housing","high-density residential","low-rise dense","historic preservation","waterfront renewal","arts district","resilient urban design"] }
-        ]
-      },
-      { key:"M", label:"Materials", sub:"Plan elements", ph:"e.g. residential blocks and green corridors",
-        groups:[
-          { label:"Elements", chips:["residential blocks and green corridors","building footprints and public plazas","stone promenade and marina","tree-lined streets and shared courtyards","cycling paths and urban farms","academic buildings and central green lawn","public squares and mixed-use ground floors","water features and linear parks","pedestrian lanes and terraced gardens","bus rapid transit and park-and-ride","green roofs and solar panels","community gardens and allotments","wetland parks and boardwalks","cultural buildings and outdoor amphitheater","market halls and food streets","sports fields and recreation centers","waterfront boardwalk and piers","playgrounds and community gardens","bike lanes and pocket parks","urban forests and green wedges","stormwater gardens and bioswales","artist studios and public galleries"] }
-        ]
-      },
-      { key:"A", label:"Atmosphere", sub:"Light", ph:"e.g. soft natural light",
-        groups:[
-          { label:"Light", chips:["soft natural light","golden hour light","warm afternoon light","soft evening light","soft overcast light","crisp morning light","aerial haze light","dramatic storm light","blue hour aerial view","bright midday sun","misty dawn light","winter white light","autumn warm light","spring clear light","summer haze light"] },
-          { label:"Tone", chips:["clean and minimal","vibrant and active","green and sustainable","urban and dense","open and parklike","waterfront and breezy","historic and layered","futuristic and planned","earthy and natural","civic and formal","community-centered","bold and graphic","soft and residential","industrial and adaptive","coastal and relaxed"] }
-        ]
-      },
-      { key:"E", label:"Expression", sub:"Visual style", ph:"e.g. architectural illustration style",
-        groups:[
-          { label:"Styles", chips:["architectural illustration style","hand-drawn sketch style","watercolor wash style","editorial illustration style","line drawing style","hyperrealistic style","digital painting style","flat color plan style","axonometric illustration style","colored aerial render style","urban diagram style","infographic style","gouache painting style","risograph style","screen print style","vintage map style","blueprint style","collage style","ink and wash style","pastel illustration style","concept render style","3D aerial render style"] }
-        ]
-      }
+      fEl("e.g. Urban masterplan top view, mixed-use development", ["Mixed-use development","Residential development","Urban block","Waterfront development","Campus","Urban plaza","Transit hub","Sports district","Cultural quarter","Tech campus","Eco village","Smart city district","Waterfront regeneration","Market district","New town center","Industrial adaptive reuse","University campus","Business park","Health campus","Waterfront marina district","Affordable housing estate","Urban infill development"]),
+      rEl("e.g. contemporary urban development"),
+      mEl("e.g. residential blocks and green corridors", ["Residential blocks and green corridors","Building footprints and public plazas","Stone promenade and marina","Tree-lined streets and shared courtyards","Cycling paths and urban farms","Academic buildings and central green lawn","Public squares and mixed-use ground floors","Water features and linear parks","Pedestrian lanes and terraced gardens","Bus rapid transit and park-and-ride","Green roofs and solar panels","Community gardens and allotments","Wetland parks and boardwalks","Cultural buildings and outdoor amphitheater","Market halls and food streets","Sports fields and recreation centers","Waterfront boardwalk and piers","Playgrounds and community gardens","Bike lanes and pocket parks","Urban forests and green wedges","Stormwater gardens and bioswales","Artist studios and public galleries"]),
+      aEl("e.g. soft natural light, vibrant and active"),
+      eEl("e.g. architectural illustration style")
     ]
   },
   {
     id:7, name:"Nighttime Architecture", defaultAr:"16:9",
     desc:"For night renders and artificially lit architectural photography.",
-    example:"Exterior perspective, eye level, contemporary house, minimalist contemporary style, white render and warm oak, warm interior light glowing through windows, dark garden surrounding, deep blue night sky, hyperrealistic style --ar 16:9",
+    example:"Exterior perspective eye level, contemporary house, minimalist style, white render and warm oak, warm interior light glowing through windows, dark garden surrounding, deep blue night sky, hyperrealistic style --ar 16:9",
     els:[
-      { key:"F", label:"Focus", sub:"View type & space", ph:"e.g. Exterior perspective eye level, contemporary house",
-        groups:[
-          { label:"Views", chips:["Exterior perspective eye level","Aerial perspective","Three-quarter night view","Street-level night view","Drone aerial view","Low-angle dramatic view","Elevated street view","Backlit silhouette view"] },
-          { label:"Spaces", chips:["contemporary house","luxury villa","cultural center","office tower","restaurant","hotel","waterfront residence","urban neighborhood","rooftop bar","retail facade","urban tower","pavilion","car showroom","beach resort","mountain retreat","waterfront hotel","city apartment building","gallery building","performing arts center","airport terminal","luxury spa resort","sports arena"] }
-        ]
-      },
-      { key:"R", label:"Reference", sub:"Architectural style", ph:"e.g. minimalist contemporary style",
-        groups:[
-          { label:"Styles", chips:["minimalist contemporary","brutalist","mid-century modern","contemporary","luxury contemporary","scandinavian","japanese","industrial","tropical modern","high-tech","organic modern","raw concrete modern","biophilic","art deco","deconstructivist","glass box modern","layered concrete","monolithic minimal","perforated facade modern","parametric facade","luminous pavilion","cantilevered modern"] }
-        ]
-      },
-      { key:"M", label:"Materials", sub:"Materials and night lighting", ph:"e.g. white render and warm oak, warm interior glow",
-        groups:[
-          { label:"Combinations", chips:["white render and warm oak with warm interior light glowing through floor-to-ceiling windows","travertine and glass with illuminated infinity pool","board-formed concrete with dramatic uplighting on facade","glass and steel with warm commercial lighting at ground floor","dark timber cladding with warm amber backlit fins","black concrete with blue-white LED accent lighting","white render with soft yellow window glow","stone and glass with underwater pool lighting","corten steel with warm bronze accent lights","glass curtain wall with warm office interior glow","perforated facade with coloured internal lighting","dark brick with warm spotlit entrance","zinc cladding with warm domestic window light","rammed earth with soft path lighting","bamboo screens with warm filtered light","white marble with dramatic ground uplighting","raw concrete with linear LED strips","glass and oak with candlelit terrace","textured concrete with projected light patterns","dark steel frame with warm amber glass panels","mirror cladding reflecting city lights","travertine with flickering fire pit light"] }
-        ]
-      },
-      { key:"A", label:"Atmosphere", sub:"Night context", ph:"e.g. dark garden surrounding, deep blue night sky",
-        groups:[
-          { label:"Night Context", chips:["dark garden surrounding deep blue night sky","reflective wet pavement deep blue night sky","urban context deep blue night sky","dark ocean background deep blue sky","snow covered surroundings deep blue winter night sky","fog and mist deep navy night sky","palm trees silhouette deep blue tropical night sky","desert night sky with stars","mountain silhouette dark night sky","overcast city night orange glow sky","pine forest and dark sky","rain and neon reflections night city","clear star-filled night sky","dramatic storm clouds night sky","harbour reflections dark water night"] }
-        ]
-      },
-      { key:"E", label:"Expression", sub:"Visual style", ph:"e.g. hyperrealistic style",
-        groups:[
-          { label:"Styles", chips:["hyperrealistic style","editorial architectural photography style","digital painting style","concept render style","cinematic photography style","long-exposure photography style","night photography style","dramatic render style","painterly night style","watercolor night style","ink and wash night style","dark moody illustration style","atmospheric render style","gouache night scene style","graphic novel night style","pastel night illustration","charcoal night sketch style","dark fantasy architectural style","photorealistic render style","blue-hour editorial style","film noir architectural style","impressionistic night style"] }
-        ]
-      }
+      fEl("e.g. Exterior perspective eye level, contemporary house", ["Contemporary house","Luxury villa","Cultural center","Office tower","Restaurant","Hotel","Waterfront residence","Urban neighborhood","Rooftop bar","Retail facade","Urban tower","Pavilion","Car showroom","Beach resort","Mountain retreat","Waterfront hotel","City apartment building","Gallery building","Performing arts center","Airport terminal","Luxury spa resort","Sports arena"]),
+      rEl("e.g. minimalist style"),
+      mEl("e.g. white render and warm oak, warm interior glow", ["White render and warm oak with warm interior light glowing through floor-to-ceiling windows","Travertine and glass with illuminated infinity pool","Board-formed concrete with dramatic uplighting on facade","Glass and steel with warm commercial lighting at ground floor","Dark timber cladding with warm amber backlit fins","Black concrete with blue-white LED accent lighting","White render with soft yellow window glow","Stone and glass with underwater pool lighting","Corten steel with warm bronze accent lights","Glass curtain wall with warm office interior glow","Perforated facade with coloured internal lighting","Dark brick with warm spotlit entrance","Zinc cladding with warm domestic window light","Rammed earth with soft path lighting","Bamboo screens with warm filtered light","White marble with dramatic ground uplighting","Raw concrete with linear LED strips","Glass and oak with candlelit terrace","Textured concrete with projected light patterns","Dark steel frame with warm amber glass panels","Mirror cladding reflecting city lights","Travertine with flickering fire pit light"]),
+      aEl("e.g. deep blue night sky, dark garden surrounding"),
+      eEl("e.g. hyperrealistic style")
     ]
   },
   {
     id:8, name:"Editorial Render", defaultAr:"1:1",
     desc:"For magazine-style images, clean, sophisticated and visually striking.",
-    example:"Isometric view, contemporary residence, minimalist contemporary style, white render and warm oak, soft golden afternoon light, editorial architectural photography style --ar 1:1",
+    example:"Isometric view, contemporary residence, minimalist style, white render and warm oak, soft golden afternoon light, editorial architectural photography style --ar 1:1",
     els:[
-      { key:"F", label:"Focus", sub:"View type & space", ph:"e.g. Isometric view, contemporary residence",
-        groups:[
-          { label:"Views", chips:["Isometric view","Floor plan top view","Site plan top view","Eye-level exterior","Three-quarter view","Close crop detail view","Wide editorial exterior","Floating isometric view"] },
-          { label:"Spaces", chips:["contemporary residence","luxury apartment","minimalist living room","contemporary office building","urban plaza","luxury villa","boutique hotel room","gallery space","penthouse terrace","minimalist kitchen","editorial bathroom","luxury retail space","co-working lounge","private members club","architectural model scene","luxury spa interior","curated dining room","high-end concept store","art-filled apartment","terrace with pool","glass pavilion in landscape","minimal rooftop space"] }
-        ]
-      },
-      { key:"R", label:"Reference", sub:"Architectural style", ph:"e.g. minimalist contemporary style",
-        groups:[
-          { label:"Styles", chips:["minimalist contemporary","luxury contemporary","brutalist","japandi","scandinavian","french modern","raw minimalist","tonal minimalist","organic modern","curated maximalist","kinfolk aesthetic","wabi-sabi","high-gloss modern","biophilic contemporary","editorial minimalist","monochrome modern","warm minimalist","southern european modern","art deco revival","high-end contemporary","museum-like interior","gallery aesthetic"] }
-        ]
-      },
-      { key:"M", label:"Materials", sub:"Strong visual character materials", ph:"e.g. white render and warm oak",
-        groups:[
-          { label:"Combinations", chips:["white render and warm oak","raw board-formed concrete and glass","natural linen and warm oak","travertine and polished brass","white render and natural stone","pale plaster and bouclé","white marble and dark walnut","limestone and warm brass","white plaster and natural fiber","greige render and warm timber","raw concrete and light oak","white marble and matte black","pale stone and woven rattan","white stucco and terracotta","pale limestone and warm brass","natural linen and aged bronze","warm plaster and dry grass","stone and bleached timber","white concrete and fluted oak","cream render and warm teak","pale grey and white oak","smoked glass and warm timber"] }
-        ]
-      },
-      { key:"A", label:"Atmosphere", sub:"Editorial light", ph:"e.g. soft golden afternoon light",
-        groups:[
-          { label:"Light", chips:["soft golden afternoon light","soft overcast diffused light","warm diffused natural light","dramatic side light","soft morning light","raking side light","clean even studio light","filtered window light","warm dappled light","crisp midday light","low winter sun","blue hour light","editorial flash lighting","warm glow afternoon","hazy soft summer light"] },
-          { label:"Mood", chips:["clean and crisp","warm and editorial","moody and sophisticated","minimal and refined","airy and light-filled","calm and considered","warm and layered","fresh and modern","bold and graphic","still and contemplative","sensory and rich","elegant and quiet","understated luxury","editorial precision","curated and intentional"] }
-        ]
-      },
-      { key:"E", label:"Expression", sub:"Visual style", ph:"e.g. editorial architectural photography style",
-        groups:[
-          { label:"Styles", chips:["editorial architectural photography style","hyperrealistic style","magazine render style","clean digital render style","tonal illustration style","flat architectural illustration","minimal line drawing style","pastel editorial illustration","digital painting style","architectural photography style","concept render style","clay render style","collage editorial style","watercolor editorial style","ink editorial style","gouache editorial style","pencil editorial sketch","risograph style","screen print style","linocut editorial style","blueprint style","mixed media editorial style"] }
-        ]
-      }
+      fEl("e.g. Isometric view, contemporary residence", ["Contemporary residence","Luxury apartment","Minimalist living room","Contemporary office building","Urban plaza","Luxury villa","Boutique hotel room","Gallery space","Penthouse terrace","Minimalist kitchen","Editorial bathroom","Luxury retail space","Co-working lounge","Private members club","Architectural model scene","Luxury spa interior","Curated dining room","High-end concept store","Art-filled apartment","Terrace with pool","Glass pavilion in landscape","Minimal rooftop space"]),
+      rEl("e.g. minimalist style"),
+      mEl("e.g. white render and warm oak", ["White render and warm oak","Raw board-formed concrete and glass","Natural linen and warm oak","Travertine and polished brass","White render and natural stone","Pale plaster and bouclé","White marble and dark walnut","Limestone and warm brass","White plaster and natural fiber","Greige render and warm timber","Raw concrete and light oak","White marble and matte black","Pale stone and woven rattan","White stucco and terracotta","Pale limestone and warm brass","Natural linen and aged bronze","Warm plaster and dry grass","Stone and bleached timber","White concrete and fluted oak","Cream render and warm teak","Pale grey and white oak","Smoked glass and warm timber"]),
+      aEl("e.g. soft golden afternoon light, editorial mood"),
+      eEl("e.g. editorial architectural photography style")
     ]
   },
   {
@@ -904,33 +833,11 @@ const T = [
     desc:"For high quality renders with maximum visual realism.",
     example:"Isometric view, luxury villa, minimalist style, travertine and warm teak, infinity pool, golden hour, depth of field, hyperrealistic style --ar 1:1",
     els:[
-      { key:"F", label:"Focus", sub:"View type & space", ph:"e.g. Isometric view, luxury villa",
-        groups:[
-          { label:"Views", chips:["Isometric view","Site plan top view","Floor plan top view","Eye-level exterior","Eye-level interior","Three-quarter aerial","Street-level perspective","Low-angle dramatic view"] },
-          { label:"Spaces", chips:["luxury villa","contemporary house","minimalist residence","contemporary office building","cultural center","brutalist complex","boutique hotel","waterfront apartment","luxury penthouse","tropical resort","clifftop residence","desert compound","forest retreat","lakeside house","glass pavilion","modernist museum","luxury retail flagship","architectural landmark","urban residential tower","private members club","luxury spa resort","bespoke family home"] }
-        ]
-      },
-      { key:"R", label:"Reference", sub:"Architectural style", ph:"e.g. minimalist style",
-        groups:[
-          { label:"Styles", chips:["minimalist","brutalist","contemporary","luxury contemporary","tropical modern","mid-century modern","high-tech","organic modern","raw concrete modern","japandi","scandinavian","mediterranean modern","biophilic","desert modern","mountain modern","coastal modern","sustainable modern","glass box modern","monolithic minimal","parametric","deconstructivist","industrial modern"] }
-        ]
-      },
-      { key:"M", label:"Materials", sub:"Specific and detailed materials", ph:"e.g. travertine and warm teak, infinity pool",
-        groups:[
-          { label:"Combinations", chips:["travertine and warm teak","raw board-formed concrete and mature trees","white render and glass","warm oak and white plaster","reflective glass and steel structure","limestone and dark timber","corten steel and glass walls","rammed earth and timber frame","white marble and stainless steel","dark basalt and glass","pale travertine and water feature","bamboo and white render","black concrete and warm oak","polished concrete and brass","aged timber and natural stone","zinc cladding and glass","terracotta and white plaster","copper and glass facade","whitewashed stone and timber","dark brick and steel","volcanic stone and timber","shell stone and whitewash"] }
-        ]
-      },
-      { key:"A", label:"Atmosphere", sub:"Light for maximum realism", ph:"e.g. golden hour, depth of field",
-        groups:[
-          { label:"Light", chips:["golden hour depth of field","dramatic raking side light deep shadows","soft overcast light","warm afternoon light soft shadows","blue hour reflections","harsh midday sun hard shadows","misty morning light","crisp winter light","dappled forest light","twilight glow","tropical noon light","low sun dramatic shadows","warm dusk light","stark white sky light","aerial haze light"] },
-          { label:"Detail", chips:["depth of field","motion blur","lens flare","reflections in glass","sharp foreground detail","atmospheric perspective","bokeh background","water reflections","shadow play","material close-up","soft gradient sky","volumetric light rays","puddle reflections","mist in trees","crisp material textures"] }
-        ]
-      },
-      { key:"E", label:"Expression", sub:"Visual style", ph:"e.g. hyperrealistic style",
-        groups:[
-          { label:"Styles", chips:["hyperrealistic style","photorealistic render style","CGI architectural visualization","editorial architectural photography style","cinematic photography style","drone photography style","ultra-high-definition render style","3D visualization style","concept render style","long-exposure photography style","HDR photography style","digital painting style","night photography style","magazine photography style","documentary photography style","film photography style","large format photography style","high-contrast photography style","architectural photography style","aerial photography style","infrared photography style","motion-blur night photography style"] }
-        ]
-      }
+      fEl("e.g. Isometric view, luxury villa", ["Luxury villa","Contemporary house","Minimalist residence","Contemporary office building","Cultural center","Brutalist complex","Boutique hotel","Waterfront apartment","Luxury penthouse","Tropical resort","Clifftop residence","Desert compound","Forest retreat","Lakeside house","Glass pavilion","Modernist museum","Luxury retail flagship","Architectural landmark","Urban residential tower","Private members club","Luxury spa resort","Bespoke family home"]),
+      rEl("e.g. minimalist style"),
+      mEl("e.g. travertine and warm teak, infinity pool", ["Travertine and warm teak","Raw board-formed concrete and mature trees","White render and glass","Warm oak and white plaster","Reflective glass and steel structure","Limestone and dark timber","Corten steel and glass walls","Rammed earth and timber frame","White marble and stainless steel","Dark basalt and glass","Pale travertine and water feature","Bamboo and white render","Black concrete and warm oak","Polished concrete and brass","Aged timber and natural stone","Zinc cladding and glass","Terracotta and white plaster","Copper and glass facade","Whitewashed stone and timber","Dark brick and steel","Volcanic stone and timber","Shell stone and whitewash"]),
+      aEl("e.g. golden hour, depth of field"),
+      eEl("e.g. hyperrealistic style")
     ]
   },
   {
@@ -938,32 +845,11 @@ const T = [
     desc:"For images with sketch, hand-drawn or linear illustration aesthetic.",
     example:"Isometric view, contemporary house, minimalist style, white render and warm timber, minimal warm color accents, expressive loose ink linework style --ar 1:1",
     els:[
-      { key:"F", label:"Focus", sub:"View type & space", ph:"e.g. Isometric view, contemporary house",
-        groups:[
-          { label:"Views", chips:["Isometric view","Floor plan top view","Site plan top view","Eye-level sketch perspective","Three-quarter sketch view","Section sketch view","Axonometric sketch view","Bird's eye sketch view"] },
-          { label:"Spaces", chips:["contemporary house","urban plaza","architectural pavilion","cultural center","residential building","library","museum","mixed-use building","art gallery","train station","urban courtyard","beach pavilion","mountain refuge","community center","rooftop pavilion","luxury villa","brutalist apartment","glass tower","farmhouse","studio building","coastal cottage","hillside residence"] }
-        ]
-      },
-      { key:"R", label:"Reference", sub:"Architectural style", ph:"e.g. minimalist style",
-        groups:[
-          { label:"Styles", chips:["contemporary","minimalist","brutalist","organic","industrial","futuristic","sculptural","deconstructivist","vernacular modern","raw concrete","high-tech","expressionist","biomorphic","post-modern","parametric","sustainable modern","mid-century modern","japandi","scandinavian","tropical modern","art deco","neoclassical sketch"] }
-        ]
-      },
-      { key:"M", label:"Materials", sub:"Suggested materials", ph:"e.g. white render and warm timber",
-        groups:[
-          { label:"Combinations", chips:["white render and warm timber","raw concrete and glass","timber structure","concrete and steel","natural stone and timber","brick and concrete","glass and steel frame","rammed earth and timber","corten steel and glass","dark timber and stone","white plaster and wood","bamboo and glass","reclaimed timber and concrete","polished concrete and steel","limestone and timber frame","board-formed concrete and oak","zinc and timber","glass and raw concrete","terracotta and white plaster","dark brick and glass","stone and weathered timber","precast concrete and timber"] }
-        ]
-      },
-      { key:"A", label:"Atmosphere", sub:"Suggested light", ph:"e.g. minimal warm color accents",
-        groups:[
-          { label:"Light & Tone", chips:["minimal warm color accents","soft natural light","dramatic side light","soft diffused light","abstract exploration of light and shadow","monochrome tonal study","pale washes of color","bold black ink and white","sepia toned","blue and white minimal color","single accent color highlight","warm ochre wash","gestural light suggestion","soft grey tones","high-contrast black and white","burnt sienna accent","cool blue wash","warm pencil tones","ink wash shadow","sparse color fields","hatching and cross-hatching tones","graphite monochrome"] }
-        ]
-      },
-      { key:"E", label:"Expression", sub:"Visual style", ph:"e.g. expressive loose ink linework style",
-        groups:[
-          { label:"Styles", chips:["hand-drawn sketch style","pencil sketch style","line drawing style","ink and watercolor hybrid style","loose confident pencil lines quick architectural study style","expressive loose ink linework style","tight technical line drawing style","cross-hatching style","rapidograph line style","brushpen sketch style","charcoal sketch style","graphite shading style","marker sketch style","architectural croquis style","gestural sketch style","stippling style","construction line study style","expressive watercolor and ink style","field sketch style","architectural journal style","loose gouache and line style","digital sketch style"] }
-        ]
-      }
+      fEl("e.g. Isometric view, contemporary house", ["Contemporary house","Urban plaza","Architectural pavilion","Cultural center","Residential building","Library","Museum","Mixed-use building","Art gallery","Train station","Urban courtyard","Beach pavilion","Mountain refuge","Community center","Rooftop pavilion","Luxury villa","Brutalist apartment","Glass tower","Farmhouse","Studio building","Coastal cottage","Hillside residence"]),
+      rEl("e.g. minimalist style"),
+      mEl("e.g. white render and warm timber", ["White render and warm timber","Raw concrete and glass","Timber structure","Concrete and steel","Natural stone and timber","Brick and concrete","Glass and steel frame","Rammed earth and timber","Corten steel and glass","Dark timber and stone","White plaster and wood","Bamboo and glass","Reclaimed timber and concrete","Polished concrete and steel","Limestone and timber frame","Board-formed concrete and oak","Zinc and timber","Glass and raw concrete","Terracotta and white plaster","Dark brick and glass","Stone and weathered timber","Precast concrete and timber"]),
+      aEl("e.g. minimal warm color accents, monochrome tonal study"),
+      eEl("e.g. expressive loose ink linework style")
     ]
   }
 ];
