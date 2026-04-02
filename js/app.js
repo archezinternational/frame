@@ -163,6 +163,11 @@ function goNext() {
     renderStepper();
     renderPanel();
     renderNav();
+  } else {
+    // Done — save to history
+    const ar = document.getElementById('arSelect').value;
+    const parts = t.els.map(el => vals[el.key].trim()).filter(Boolean);
+    if (parts.length) savePrompt(t.name, parts.join(', ') + ` --ar ${ar}`);
   }
 }
 

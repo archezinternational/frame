@@ -46,8 +46,31 @@
 
 <header>
   <div class="logo">FRAME <span>by Archez International</span></div>
-  <button class="btn-ghost" onclick="resetAll()">Reset All</button>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <button class="btn-ghost" onclick="openHistory()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      History
+    </button>
+    <button class="btn-ghost" onclick="resetAll()">Reset All</button>
+  </div>
 </header>
+
+<!-- ── HISTORY PANEL ──────────────────────────────────────────────── -->
+<div id="historyOverlay" class="h-overlay" onclick="closeHistory()"></div>
+<div id="historyPanel" class="h-panel">
+  <div class="h-panel-top">
+    <div>
+      <div class="h-panel-title">History</div>
+      <div id="historyCount" class="h-panel-sub"></div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <button class="h-clear" onclick="clearHistory()">Clear all</button>
+      <button class="h-close" onclick="closeHistory()">✕</button>
+    </div>
+  </div>
+  <div id="historyList" class="h-list"></div>
+</div>
+<!-- ── END HISTORY PANEL ──────────────────────────────────────────── -->
 
 <div class="app-shell">
   <div class="sidebar">
@@ -110,5 +133,6 @@
 <script src="js/gate.js"></script>
 <script src="js/data.js"></script>
 <script src="js/app.js"></script>
+<script src="js/history.js"></script>
 </body>
 </html>
