@@ -534,12 +534,10 @@
       background: var(--bg);
       border-left: 1px solid var(--border);
       z-index: 201;
-      display: flex; flex-direction: column;
-      transform: translateX(100%);
-      transition: transform 0.28s ease;
+      display: none; flex-direction: column;
       box-shadow: -4px 0 24px rgba(0,0,0,0.08);
     }
-    .h-panel.open { transform: translateX(0); }
+    .h-panel.open { display: flex; }
 
     .h-panel-top {
       display: flex; align-items: flex-start;

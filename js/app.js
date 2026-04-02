@@ -96,7 +96,7 @@ function renderNav() {
   const btn = document.getElementById('btnNext');
   if (last) {
     btn.classList.add('finish');
-    btn.innerHTML = 'Done ✓';
+    btn.innerHTML = 'Save ✓';
   } else {
     btn.classList.remove('finish');
     btn.innerHTML = 'Next <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>';
