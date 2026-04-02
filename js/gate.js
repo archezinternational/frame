@@ -67,7 +67,10 @@ async function unlockFRAME() {
   }
 }
 
-// On load — skip gate if valid session exists
+// On load — skip gate if valid session exists or running locally
 (async () => {
+  if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+    _dismissGate(); return;
+  }
   if (await _checkStored()) _dismissGate();
 })();
